@@ -1,0 +1,20 @@
+/* 全局mixin方法 begin */
+/* 单行文本截断 */
+.text-ellipsis() {
+    white-space: normal;
+    word-wrap: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
+// 单行、多行文本截断
+.line-camp(@line: 1) {
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: @line;
+    -webkit-box-orient: vertical;
+}
+
+/* 全局mixin方法 end */
