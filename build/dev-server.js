@@ -65,7 +65,7 @@ var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsS
 app.use(staticPath, express.static('./static'))
 // app.use('/api', express.static('./mock')) // 之所以不用这一行是因为我们需要特殊处理下，把前端请求的xx.php换成xx.js(前端的mock数据)，而且还需要用all方法处理所有请求
 // )
-app.all(/api(\/\w+)+\.php$/, function (req, res) {
+app.all(/api(\/\w+)+\.ajax$/, function (req, res) {
   var url = req.url || '';
   url = url.replace(/api/, 'mock');
   var temp = url.split('.');

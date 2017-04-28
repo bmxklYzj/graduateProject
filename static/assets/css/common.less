@@ -1,7 +1,7 @@
 /* 全局mixin方法 begin */
 /* 单行文本截断 */
 .text-ellipsis() {
-    white-space: normal;
+    white-space: nowrap;
     word-wrap: normal;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -18,3 +18,46 @@
 }
 
 /* 全局mixin方法 end */
+
+/* 全局工具样式 begin */
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.cf:after{
+    clear: both;
+    content: '';
+    display: block;
+}
+/* 全局工具样式 end */
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+ul {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+body {
+  font-size: 14px;
+}
+@bg-blue: #324057;
+@blue: #20A0FF;
+@text-black: #1F2D3D;
+@text-gray: #5E6D82;
+@border: #E0E6ED;
+@green: #13CE66;
