@@ -13,15 +13,15 @@
           </el-col>
           <el-col :md="12">
             <div class="right">
-              <label>
-                用户名：
-                <el-input v-model="name" placeholder="请输入用户名"></el-input>
-              </label>
-              <label>
-                密码：
-                <el-input v-model="password" placeholder="请输入密码"></el-input>
-              </label>
-              <el-button class="login-btn" type="primary">登录</el-button>
+              <el-form :model="form" :rules="rules" ref="form" label-width="100px" label-color="#fff">
+                <el-form-item label="用户名" prop="userName">
+                  <el-input v-model="form.userName" placeholder="请输入用户名" class="form-item-input"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                  <el-input v-model="form.password" placeholder="请输入密码" class="form-item-input"></el-input>
+                </el-form-item>
+              </el-form>
+              <el-button @click="submitForm('form')" class="login-btn" type="primary">登录</el-button>
               <a class="register-btn" href="#register">还没有注册？点此注册</a>
             </div>
           </el-col>
@@ -63,8 +63,20 @@ export default {
   name: 'hello',
   data () {
     return {
+      form: {
         name: '',
         password: ''
+      },
+      rules: {
+        userName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   components: {
@@ -78,6 +90,36 @@ export default {
   created: function () {
   },
   methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.login();
+        } else {
+          this.$message.error('表单填写错误，请重新填写！');
+          return false;
+        }
+      });
+    },
+    login: function () {
+      var params = {
+        userName: this.form.userName,
+        password: this.form.password
+      };
+      this.$http.post('auth/userLogin', params).then(response => {
+        var data = response.body || {};
+        if (data.success) {
+          this.$message.success('登录成功！');
+          sessionStorage.setItem('token', data.token);
+          this.$router.push('/');
+        } else {
+          this.$message.error(data.info || '登录失败！');
+          sessionStorage.setItem('token', null);
+        }
+      }, response => {
+        this.$message.error(data.info || '登录失败！');
+        sessionStorage.setItem('token', null);
+      });
+    }
   }
 }
 </script>
@@ -113,7 +155,10 @@ export default {
       margin-top: 160px;
       color: #fff;
       text-align: right;
-
+      .el-form {
+        width: 400px;
+        float: right;
+      }
       label {
         display: block;
         text-align: right;

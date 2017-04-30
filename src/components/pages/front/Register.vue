@@ -2,48 +2,58 @@
   <div>
     <my-header></my-header>
 
-    <div class="login-header">
+    <div class="register-header">
       <div class="container">
-        <el-row class="login-header-form" :gutter="0">
-          <el-col :md="9">
-            <label>
-              用户名：
-              <el-input v-model="name" placeholder="请输入用户名"></el-input>
-            </label>
-            <label>
-              密码：
-              <el-input v-model="password" placeholder="请输入密码"></el-input>
-            </label>
-            <label>
-              确认密码：
-              <el-input v-model="name" placeholder="请输入用户名"></el-input>
-            </label>
-            <label>
-              昵称：
-              <el-input v-model="password" placeholder="请输入密码"></el-input>
-            </label>
-          </el-col>
-          <el-col :md="12">
-            <label>
-              省份：
-              <el-input v-model="name" placeholder="请输入用户名"></el-input>
-            </label>
-            <label>
-              学校：
-              <el-input v-model="password" placeholder="请输入密码"></el-input>
-            </label>
-            <label>
-              学号：
-              <el-input v-model="name" placeholder="请输入用户名"></el-input>
-            </label>
-            <label>
-              班级：
-              <el-input v-model="password" placeholder="请输入密码"></el-input>
-            </label>
-          </el-col>
-        </el-row>
+        <el-form :model="form" :rules="rules" ref="form" label-width="100px" label-color="#fff" class="cf register-header-form">
+          <el-form-item label="用户名" prop="userName" class="form-item">
+            <el-input v-model="form.userName" placeholder="请输入用户名" class="form-item-input"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="form.password" placeholder="请输入密码"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="repassword">
+            <el-input v-model="form.repassword" placeholder="请确认密码"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄" prop="age">
+            <el-input v-model="form.age" placeholder="请输入年龄"></el-input>
+          </el-form-item>
+          <el-form-item label="性别" prop="sex">
+            <el-input v-model="form.sex" placeholder="请输入性别"></el-input>
+          </el-form-item>
+          <el-form-item label="学校" prop="school">
+            <el-input v-model="form.school" placeholder="请输入学校"></el-input>
+          </el-form-item>
+          <el-form-item label="学号" prop="studentId">
+            <el-input v-model="form.studentId" placeholder="请输入学号"></el-input>
+          </el-form-item>
+          <el-form-item label="班号" prop="classId">
+            <el-input v-model="form.classId" placeholder="请输入班号"></el-input>
+          </el-form-item>
+            <el-form-item label="个人简介" prop="introduce">
+            <el-input type="textarea" v-model="form.introduce" placeholder="请输入个人简介"></el-input>
+          </el-form-item>
+          <!-- 兴趣 -->
+          <div class="register-header-interest">
+            <label>感兴趣的科目</label>
+            <div class="wrap">
+              <el-select
+                v-model="form.interest"
+                multiple
+                filterable
+                allow-create
+                placeholder="请输入你感兴趣的科目">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </el-form>
+
         <div class="register-btn-group">
-            <el-button class="login-btn" type="primary">注册</el-button>
+            <el-button @click="submitForm('form')" class="login-btn" type="primary">注册</el-button>
             <a class="register-btn" href="#login">已有账号？点此登录</a>
         </div>
       </div>
@@ -84,8 +94,44 @@ export default {
   name: 'hello',
   data () {
     return {
-        name: '',
-        password: ''
+      form: {
+        userName: '',
+        password: '',
+        repassword: '',
+        age: '',
+        sex: '',
+        school: '',
+        studentId: '',
+        classId: '',
+        avator: '',
+        introduce: '',
+        interest: ''
+      },
+      options: [{
+        value: '高数',
+        label: '高数'
+      }, {
+        value: '大物',
+        label: '大物'
+      }, {
+        value: '英语',
+        label: '英语'
+      }],
+
+      rules: {
+        userName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+        ],
+        repassword: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   components: {
@@ -99,17 +145,56 @@ export default {
   created: function () {
   },
   methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.form.password !== this.form.repassword) {
+            this.$message.error('两次密码如不一致，请重新填写！');
+            return false;
+          }
+          this.register();
+        } else {
+          this.$message.error('表单填写错误，请重新填写！');
+          return false;
+        }
+      });
+    },
+    register: function () {
+      var params = {
+        userName: this.form.userName,
+        password: this.form.password,
+        age: this.form.age,
+        sex: this.form.sex,
+        school: this.form.school,
+        studentId: this.form.studentId,
+        classId: this.form.classId,
+        avator: this.form.avator,
+        introduce: this.form.introduce,
+        interest: this.form.interest.join(',')
+      };
+      this.$http.post('auth/userRegister', params).then(response => {
+        var data = response.body || {};
+        if (data.success) {
+          this.$message.success('注册成功！');
+          sessionStorage.setItem('token', data.token);
+          this.$router.push('/');
+        } else {
+          this.$message.error('注册失败！');
+          sessionStorage.setItem('token', null);
+        }
+      }, response => {
+        this.$message.error('注册失败！');
+        sessionStorage.setItem('token', null);
+      });
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less" >
   @import '../../../../static/assets/css/common.less';
-  .el-form-item__label {
-    color: red;
-  }
-  .login-header {
+  .register-header {
     width: 100%;
     min-height: 450px;
 
@@ -120,19 +205,19 @@ export default {
 
     @width: 300px;
     &-form {
-      padding-top: 80px;
-      color: #fff;
-      text-align: right;
-
-      label {
-        display: block;
-        text-align: right;
-        margin-bottom: 30px;
-      }
-      .el-input {
-        width: @width;
+      padding-top: 50px;
+    }
+    .el-form-item {
+      width: 35%;
+      margin-right: 10%;
+      margin-left: 5%;
+      float: left;
+      
+      .el-form-item__label {
+        color: #fff;
       }
     }
+
     .login-btn {
       margin-top: 30px;
       width: @width;
@@ -143,6 +228,26 @@ export default {
       margin: 10px 0 30px;
       color: #fff;
       text-decoration: underline;
+    }
+  }
+
+  .register-header-interest {
+    display: inline-block;
+    width: 35%;
+    float: right;
+    margin-right: 10%;
+    label {
+      width: 100px;
+      color: #fff;
+      float: left;
+      padding: 11px 12px 11px 0;
+      box-sizing: border-box;
+    }
+    .el-select {
+      width: 100%;
+    }
+    .wrap {
+      margin-left: 100px;
     }
   }
 

@@ -98,6 +98,13 @@ export default new Router({
       path: '/admin/newquestion',
       name: 'NewQuestion',
       component: NewQuestion
+    },
+
+    // other
+    {
+      path: '*',
+      name: 'Index',
+      component: Index
     }
   ]
 });

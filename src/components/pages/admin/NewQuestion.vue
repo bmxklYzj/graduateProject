@@ -6,9 +6,9 @@
       <section>
         <p class="title">1. 请选择题目类型：</p>
         <div class="content">
-          <label><input type="radio" name="type" value="1">单选</label>
-          <label><input type="radio" name="type" value="2">多选</label>
-          <label><input type="radio" name="type" value="3">填空、问答题</label>
+          <label><input v-model="type" type="radio" name="type" value="1">单选</label>
+          <label><input v-model="type" type="radio" name="type" value="2">多选</label>
+          <label><input v-model="type" type="radio" name="type" value="3">填空、问答题</label>
         </div>
       </section>
       <section>
@@ -55,6 +55,7 @@ export default {
   name: 'hello',
   data () {
     return {
+      type: '',
       description: '',
       options: ['1', '2', '3', '4']
     }
