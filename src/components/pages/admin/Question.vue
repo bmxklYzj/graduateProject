@@ -22,9 +22,9 @@
           <el-table-column type="expand">
             <template scope="props">
               <div class="question-item">
-                <p class="question-desc">题目描述：{{props.row.title}}</p>
+                <p class="question-desc">题目描述：{{props.row.description}}</p>
                   <!--多选-->
-                  <div v-if="+props.row.type === 2"  v-for="(item, index) in props.row.options">
+                  <div class="question-desc-option"  v-for="(item, index) in props.row.option">
                     <span class="question-desc-label-span">
                       {{String.fromCharCode('A'.charCodeAt(0) + index)}}.
                     </span>
@@ -36,30 +36,34 @@
           </el-table-column>
 
           <el-table-column
-          prop="title"
+          prop="description"
           label="试卷名称"
           :width="410"
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
-          prop="createUser"
+          prop="createUserName"
           label="创建人"
-          :width="150">
+          :width="150"
+          :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
           prop="createTime"
           label="创建时间"
-          :width="150">
+          :width="180"
+          :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
           prop="finishedCnt"
           label="已作答人数"
-          :width="150">
+          :width="120"
+          :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
           prop="heat"
           label="热度"
-          :width="150">
+          :width="150"
+          :show-overflow-tooltip="true">
           </el-table-column>
         </el-table>
       </template>
@@ -77,6 +81,7 @@
 </template>
 
 <script>
+let moment = require('moment');
 import AdminHeader from '../../common/AdminHeader.vue'
 import Footer from '../../common/Footer.vue'
 
@@ -84,13 +89,6 @@ export default {
   name: 'hello',
   data () {
     return {
-      // {
-      //   "title": "春季校园招聘-互联网公司面试题：内含题目解答",
-      //   "createUser": "张三李四",
-      //   "createTime": "2017-04-01",
-      //   "finishedCnt": ~~(Math.random() * 10) + 1,
-      //   "heat":  ~~(Math.random() * 10) + 1
-      // }
       exam: [],
       checkList: [] // 多选的数组
     }
@@ -98,18 +96,19 @@ export default {
   components: {
     'my-header': AdminHeader,
     'my-footer': Footer
-    // 'component-arousel': componentCarousel,
-    // 'component-grid': componentGrid,
-    // 'component-gap': componentGap
   },
   created: function () {
     this.getQuestion();
   },
   methods: {
     getQuestion: function () {
-      this.$http.get('./api/question.ajax').then(response => {
+      this.$http.get('./api/admin/question').then((response) => {
         this.exam = response.body.data;
-        }, response => {
+        this.exam.forEach((item) => {
+          item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
+          item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
+        })
+      }, response => {
       });
     },
     newQuestion: function () {
@@ -165,8 +164,12 @@ export default {
   }
 
   .question-desc {
+    line-height: 1.5;
     &-label-span {
       margin: 10px 20px 0 10px;
+    }
+    &-option {
+      margin: 10px 0;
       line-height: 1.5;
     }
 

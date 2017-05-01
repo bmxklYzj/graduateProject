@@ -6,6 +6,7 @@ let Question = mongoose.model('Question', questionSchema);
 let createQuestion = function * (params) {
   let info = yield Question.create({
     createUserId: params.createUserId,
+    createUserName: params.createUserName,
     createTime: params.createTime,
     updateTime: params.updateTime,
     type: params.type,
@@ -19,6 +20,12 @@ let createQuestion = function * (params) {
   return info;
 };
 
+let questionList = function * () {
+  let info = yield Question.find({});
+  return info;
+};
+
 module.exports = {
-  createQuestion
+  createQuestion,
+  questionList
 };

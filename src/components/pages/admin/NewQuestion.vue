@@ -6,9 +6,9 @@
       <section>
         <p class="title">1. 请选择题目类型：</p>
         <div class="content">
-          <label><input v-model="type" type="radio" name="type" value="1">单选</label>
-          <label><input v-model="type" type="radio" name="type" value="2">多选</label>
-          <label><input v-model="type" type="radio" name="type" value="3">填空、问答题</label>
+          <el-radio class="radio" v-model="type" label="1">单选</el-radio>
+          <el-radio class="radio" v-model="type" label="2">多选</el-radio>
+          <el-radio class="radio" v-model="type" label="3">填空、问答题</el-radio>
         </div>
       </section>
       <section>
@@ -23,15 +23,26 @@
           <p>添加题目图片素材（可选）
             <input type="file">
           </p>
+          <el-upload
+            action="./unauth/admin/imageUpload"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog v-model="dialogVisible" size="tiny">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
         </div>
       </section>
-      <section>
+      <!-- type 为1或2 既单选、多选有option，而type 3填空问答没有option-->
+      <section v-if="+type === 1 || +type === 2">
         <p class="title">3. 题目选项：</p>
         <div class="content">
-          <div class="item" v-for="(item, index) in options">
+          <div class="item" v-for="(item, index) in option">
             <el-form>
               <el-form-item :label="String.fromCharCode('A'.charCodeAt(0) + index) + '.'">
-                <el-input v-model="options[index]" placeholder="请输入内容"></el-input>
+                <el-input v-model="option[index]" placeholder="请输入内容"></el-input>
                 <el-button class="remove" @click="removeOption(index)" type="danger">X</el-button>
               </el-form-item>
             </el-form>
@@ -40,7 +51,29 @@
         </div>
       </section>
 
-      <el-button class="btn-create-question" type="primary">创建试题</el-button>
+      <section class="new-question-answer">
+        <p class="title">{{+type === 3 ? '3': '4'}}. 答案：</p>
+        <template v-if="+type === 1">
+          <span class="radio" v-for="(item, index) in option">
+            <el-radio class="radio" v-model="answerTypeOneOrThree" :label="index">{{String.fromCharCode('A'.charCodeAt(0) + index)}}</el-radio>
+          </span>
+        </template>
+        <template v-if="+type === 2">
+          <el-checkbox-group v-model="answer">
+            <el-checkbox :label="index" v-for="(item, index) in option">{{String.fromCharCode('A'.charCodeAt(0) + index)}}</el-checkbox>
+          </el-checkbox-group>
+        </template>
+        <template v-if="+type === 3">
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 4, maxRows: 10}"
+            placeholder="请输入题目描述"
+            v-model="answerTypeOneOrThree">
+          </el-input>
+        </template>
+      </section>
+
+      <el-button @click="createQuestion()" class="btn-create-question" type="primary">创建试题</el-button>
     </div>
 
     <my-footer></my-footer>
@@ -48,6 +81,7 @@
 </template>
 
 <script>
+import jwt from 'jsonwebtoken'
 import AdminHeader from '../../common/AdminHeader.vue'
 import Footer from '../../common/Footer.vue'
 
@@ -55,9 +89,14 @@ export default {
   name: 'hello',
   data () {
     return {
-      type: '',
+      type: '1',
       description: '',
-      options: ['1', '2', '3', '4']
+      option: ['', '', '', ''],
+      answer: [],
+      answerTypeOneOrThree: '', // 因为题目的type为 1时时radio时数字，为3时是textarea，采用此变量过度，提交表单时将其放入answer数组中
+
+      dialogImageUrl: '',
+      dialogVisible: false
     }
   },
   components: {
@@ -67,11 +106,53 @@ export default {
   created: function () {
   },
   methods: {
+    getUserInfoFromToken () {
+      let token = sessionStorage.getItem('token');
+      if (token) {
+        let decode = jwt.verify(token, 'token');
+        return decode || {};
+      }
+      return {};
+    },
     addOption: function () {
-      this.options.push('');
+      this.option.push('');
     },
     removeOption: function (index) {
-      this.options.splice(index, 1);
+      this.option.splice(index, 1);
+    },
+    createQuestion: function () {
+      // type is 1 or 3, deal specially
+      if (+this.type === 1 || +this.type === 3) {
+        this.answer = [this.answerTypeOneOrThree];
+      }
+      var params = {
+        createUserId: this.getUserInfoFromToken().userId,
+        createUserName: this.getUserInfoFromToken().userName,
+        type: this.type,
+        description: this.description,
+        option: this.option,
+        answer: this.answer
+      };
+      this.$http.post('api/admin/createQuestion', params).then(response => {
+        var data = response.body || {};
+        if (data.success) {
+          this.$message.success('创建成功！');
+          this.$router.push('/admin/question');
+        } else {
+          this.$message.error('创建失败！');
+        }
+      }, response => {
+        this.$message.error('创建失败！');
+      });
+    },
+
+    // 图片上传
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
     }
   }
 }
@@ -108,6 +189,15 @@ export default {
         margin-left: 10px;
       }
       
+    }
+
+    &-answer {
+      .radio {
+        margin-right: 10px;
+      }
+      .el-textarea {
+        width: 80%;
+      }
     }
     .btn-create-question {
         width: 80%;

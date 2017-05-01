@@ -1,8 +1,8 @@
 // const question = require('../controllers/question.js');
-const admin = require('../controllers/admin.js');
+const image = require('../controllers/image.js');
 const router = require('koa-router')();
 
-admin(router);
+image(router);
 
 module.exports = router;
 

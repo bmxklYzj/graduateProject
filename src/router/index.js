@@ -1,24 +1,24 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
 // front
-import Index from '@/components/pages/front/Index'
-import Login from '@/components/pages/front/Login'
-import Register from '@/components/pages/front/Register'
-import Exam from '@/components/pages/front/Exam'
-import Question from '@/components/pages/front/Question'
-import DoExam from '@/components/pages/front/DoExam'
-import ExamDone from '@/components/pages/front/ExamDone'
-import Activity from '@/components/pages/front/Activity'
-import Profile from '@/components/pages/front/Profile'
+import Index from '@/components/pages/front/Index';
+import Login from '@/components/pages/front/Login';
+import Register from '@/components/pages/front/Register';
+import Exam from '@/components/pages/front/Exam';
+import Question from '@/components/pages/front/Question';
+import DoExam from '@/components/pages/front/DoExam';
+import ExamDone from '@/components/pages/front/ExamDone';
+import Activity from '@/components/pages/front/Activity';
+import Profile from '@/components/pages/front/Profile';
 
 // admin
-import AdminExam from '@/components/pages/admin/Exam'
-import AdminQuestion from '@/components/pages/admin/Question'
-import NewQuestion from '@/components/pages/admin/NewQuestion'
+import AdminExam from '@/components/pages/admin/Exam';
+import AdminQuestion from '@/components/pages/admin/Question';
+import NewQuestion from '@/components/pages/admin/NewQuestion';
 
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [

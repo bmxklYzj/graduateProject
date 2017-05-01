@@ -9,7 +9,7 @@
       <i class="el-icon-search"></i>
     </div>
     <el-submenu index="3">
-      <template slot="title">个人中心</template>
+      <template slot="title">个人中心({{userName}})</template>
       <el-menu-item index="3-1"><a href="#activity" >学习活动</a></el-menu-item>
       <el-menu-item index="3-2"><a href="#profile">个人信息</a></el-menu-item>
     </el-submenu>
@@ -18,22 +18,35 @@
 </template>
 
 <script>
+import jwt from 'jsonwebtoken';
 
 export default {
   name: 'hello',
   data () {
     return {
-      activeIndex: '1'
+      activeIndex: '1',
+      userName: ''
     }
   },
   components: {
 
   },
   created: function () {
+    let userInfo = this.getUserInfoFromToken();
+    console.log(userInfo);
+    this.userName = userInfo.userName;
   },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
+    },
+    getUserInfoFromToken () {
+      let token = sessionStorage.getItem('token');
+      if (token) {
+        let decode = jwt.verify(token, 'token');
+        return decode || {};
+      }
+      return {};
     }
   }
 }
