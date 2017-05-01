@@ -24,8 +24,9 @@
             <input type="file">
           </p>
           <el-upload
-            action="./unauth/admin/imageUpload"
+            action="./auth/admin/imageUpload"
             list-type="picture-card"
+            :on-success="imageSuccess"
             :on-preview="handlePictureCardPreview"
             :on-remove="handleRemove">
             <i class="el-icon-plus"></i>
@@ -85,6 +86,8 @@ import jwt from 'jsonwebtoken'
 import AdminHeader from '../../common/AdminHeader.vue'
 import Footer from '../../common/Footer.vue'
 
+let util = require('../../../common/util.js');
+
 export default {
   name: 'hello',
   data () {
@@ -93,6 +96,7 @@ export default {
       description: '',
       option: ['', '', '', ''],
       answer: [],
+      image: [],
       answerTypeOneOrThree: '', // 因为题目的type为 1时时radio时数字，为3时是textarea，采用此变量过度，提交表单时将其放入answer数组中
 
       dialogImageUrl: '',
@@ -121,7 +125,7 @@ export default {
       this.option.splice(index, 1);
     },
     createQuestion: function () {
-      // type is 1 or 3, deal specially
+      // type is 1 or 3, 数组只有一个元素
       if (+this.type === 1 || +this.type === 3) {
         this.answer = [this.answerTypeOneOrThree];
       }
@@ -131,9 +135,10 @@ export default {
         type: this.type,
         description: this.description,
         option: this.option,
-        answer: this.answer
+        answer: this.answer,
+        image: this.image
       };
-      this.$http.post('api/admin/createQuestion', params).then(response => {
+      this.$http.post('api/admin/question', params).then(response => {
         var data = response.body || {};
         if (data.success) {
           this.$message.success('创建成功！');
@@ -149,10 +154,18 @@ export default {
     // 图片上传
     handleRemove(file, fileList) {
       console.log(file, fileList);
+      let remoteImage = file.response.imageUrl;
+      let index = this.image.indexOf(remoteImage);
+      this.image.splice(index, 1);
+      // 这里其实还应该发送请求给后端remove掉对应的图片
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
+    },
+    imageSuccess(res, file) {
+      this.dialogImageUrl = res.imageUrl || '';
+      this.image.push(res.imageUrl || '');
     }
   }
 }

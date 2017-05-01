@@ -21,6 +21,8 @@ let UserRegister = function * (params) {
   let user = params;
   let userInfo = yield User.create({
     userName: user.userName,
+    // role: user.role,
+    // wantToBeAdmin: user.wantToBeAdmin,
     password: user.password,
     age: user.age,
     sex: user.sex,

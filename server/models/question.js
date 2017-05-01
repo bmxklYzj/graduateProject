@@ -25,7 +25,15 @@ let questionList = function * () {
   return info;
 };
 
+let getQuestionById = function * (questionId) {
+  let dbResult = yield Question.findOne({
+    _id: questionId
+  });
+  return dbResult;
+};
+
 module.exports = {
   createQuestion,
-  questionList
+  questionList,
+  getQuestionById
 };

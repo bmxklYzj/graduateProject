@@ -4,6 +4,8 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
   // userId为默认的_id
   userName: {type: String}, // 用户名
+  role: {type: String, default: '1'}, // 账号角色：1普通注册用户，2管理员可以发布试题，3超级管理员
+  wantToBeAdmin: {type: Boolean, default: false}, // 标志普通用户是否想成为管理员
   password: {type: String}, // 密码
   age: {type: String}, // 年龄
   sex: {type: String}, // 性别：之所以不用boolean是因为用户不填性别我会设置成未填写而非男或女

@@ -16,6 +16,7 @@ import Profile from '@/components/pages/front/Profile';
 import AdminExam from '@/components/pages/admin/Exam';
 import AdminQuestion from '@/components/pages/admin/Question';
 import NewQuestion from '@/components/pages/admin/NewQuestion';
+import QuestionList from '@/components/pages/admin/QuestionList';
 
 
 Vue.use(Router);
@@ -76,7 +77,7 @@ export default new Router({
     },
 
 
-    // admin-试卷
+    // admin-试卷列表
     {
       path: '/admin/exam',
       name: 'AdminExam',
@@ -87,7 +88,7 @@ export default new Router({
       name: 'AdminExam',
       component: AdminExam
     },
-    // admin-试题
+    // admin-试题列表
     {
       path: '/admin/question',
       name: 'AdminQuestion',
@@ -98,6 +99,12 @@ export default new Router({
       path: '/admin/newquestion',
       name: 'NewQuestion',
       component: NewQuestion
+    },
+    // admin-点击某一个试卷 进入到试题列表，纯展示
+    {
+      path: '/admin/questionlist/*',
+      name: 'QuestionList',
+      component: QuestionList
     },
 
     // other

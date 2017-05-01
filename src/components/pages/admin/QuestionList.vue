@@ -12,14 +12,11 @@
         <el-table
           :data="question"
           stripe
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
+          :default-expand-all="true"
+          style="width: 100%">
 
-          <el-table-column
-            type="selection"
-            width="55">
           </el-table-column>
-          <el-table-column type="expand">
+          <el-table-column type="expand" >
             <template scope="props">
               <div class="question-item">
                 <p class="question-desc">题目描述：{{props.row.description}}</p>
@@ -89,22 +86,6 @@
         </el-table>
       </template>
 
-      <!--分页-->
-      <el-pagination
-        layout="prev, pager, next"
-        :total="1000">
-      </el-pagination>
-
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" label-position="top" class="question-new-exam">
-        <el-form-item label="试卷标题" prop="examDescription">
-          <el-input
-          type="textarea"
-          :autosize="{ minRows: 2, maxRows: 6}"
-          v-model="ruleForm.examDescription"></el-input>
-        </el-form-item>
-      </el-form>
-
-      <el-button @click="createExam('ruleForm')" class="admin-exam-create-exam" type="primary">将选中的试题创建新的试卷</el-button>
       
     </div>
 
@@ -130,17 +111,6 @@ export default {
       
       question: [],
       checkList: [], // 多选的数组
-
-      ruleForm: {
-        examDescription: '' // 创建试卷时的描述
-      },
-      rules: {
-        examDescription: [
-          { required: true, message: '请输入试卷标题', trigger: 'blur' },
-          { min: 3, max: 500, message: '长度在 3 到 500 个字符', trigger: 'blur' }
-        ]
-      }
-      
     }
   },
   components: {
@@ -148,11 +118,13 @@ export default {
     'my-footer': Footer
   },
   created: function () {
-    this.getQuestion();
+    this.getQuestionList();
   },
   methods: {
-    getQuestion: function () {
-      this.$http.get('./api/admin/question').then((response) => {
+    getQuestionList: function () {
+      let url = location.href;
+      let examId =  location.href.split('/admin/questionlist/')[1].split('/')[0];
+      this.$http.get('./api/admin/examquestionlist/' + examId).then((response) => {
         this.question = response.body.data;
         this.question.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
@@ -161,50 +133,13 @@ export default {
       }, response => {
       });
     },
-    newQuestion: function () {
-      location.hash = '#admin/newquestion';
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = [];
-      val.forEach((item, index) => {
-        this.multipleSelection.push(item._id);
-      });
-    },
-    createExam(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (!valid) {
-          this.$message.error("请先输入试卷标题！");
-          return false;
-        } else {
-          // 判断是否选择了题目，没选不能提交
-          if (!this.multipleSelection.length) {
-            this.$message.error("请先选择试题！");
-            return;
-          }
-          let params = {
-            createUserId: util.getUserInfoFromToken().userId,
-            createUserName: util.getUserInfoFromToken().userName,
-            description: this.ruleForm.examDescription,
-            question: this.multipleSelection
-          };
-          this.$http.post('./api/admin/exam', params).then((response) => {
-            var data = response.body || {};
-            if (data.success) {
-              this.$message.success('创建成功！');
-              this.$router.push('/admin/exam');
-            } else {
-              this.$message.error('创建失败！');
-            }
-          }, response => {
-            this.$message.error('创建失败！');
-          });
-        }
-      });
-    },
     imagePreview(url) {
       this.dialogVisible = true;
       this.dialogImageUrl = url;
-    }
+    },
+    newQuestion: function () {
+      location.hash = '#admin/newquestion';
+    },
   }
 }
 </script>
