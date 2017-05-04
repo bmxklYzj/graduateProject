@@ -8,6 +8,8 @@ import App from './App';
 import router from './router';
 import VueResource from 'vue-resource';
 
+let util = require('./common/util');
+
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueResource);
@@ -22,7 +24,12 @@ router.beforeEach((to, from, next) => {
       next('/');
     } else {
       Vue.http.headers.common['Authorization'] = 'Bearer ' + token; // 注意Bearer后有个空格
-      next();
+      // 普通用户不能访问admin模块，这里使用前端控制的，感觉后端也应该控制下
+      // if (to.path.startsWith('/admin') && !(+token.role === 2 || +token.role === 3)) {
+      //   next('/dontHaveAuth');
+      // } else {
+        next();
+      // }
     }
     // next('/login');
   } else {

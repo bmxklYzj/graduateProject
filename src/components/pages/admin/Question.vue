@@ -181,9 +181,10 @@ export default {
             this.$message.error("请先选择试题！");
             return;
           }
+          let token = util.getUserInfoFromToken() || {};
           let params = {
-            createUserId: util.getUserInfoFromToken().userId,
-            createUserName: util.getUserInfoFromToken().userName,
+            createUserId: tokekn.userId,
+            createUserName: tokekn.userName,
             description: this.ruleForm.examDescription,
             question: this.multipleSelection
           };

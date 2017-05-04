@@ -3,7 +3,7 @@
     <my-header></my-header>
 
     <div class="container">
-      
+      对不起，您没有权限访问此页面！
     </div>
 
     <my-footer></my-footer>

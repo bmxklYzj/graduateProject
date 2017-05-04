@@ -110,14 +110,6 @@ export default {
   created: function () {
   },
   methods: {
-    getUserInfoFromToken () {
-      let token = sessionStorage.getItem('token');
-      if (token) {
-        let decode = jwt.verify(token, 'token');
-        return decode || {};
-      }
-      return {};
-    },
     addOption: function () {
       this.option.push('');
     },
@@ -129,9 +121,10 @@ export default {
       if (+this.type === 1 || +this.type === 3) {
         this.answer = [this.answerTypeOneOrThree];
       }
+      let token = util.getUserInfoFromToken() || {};
       var params = {
-        createUserId: this.getUserInfoFromToken().userId,
-        createUserName: this.getUserInfoFromToken().userName,
+        createUserId: token.userId,
+        createUserName: token.userName,
         type: this.type,
         description: this.description,
         option: this.option,

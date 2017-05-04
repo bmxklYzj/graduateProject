@@ -45,6 +45,7 @@ app.on('error', function (err, ctx) {
 });
 // koa.use('/unauth', apiUnAuth.routes());
 
+// 图片上传
 app.use(function * (next) {
   console.log('hello');
   // ignore non-POSTs

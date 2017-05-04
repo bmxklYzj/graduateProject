@@ -14,7 +14,8 @@ let UserRegister = function * () {
   if (result) {
     let userToken = {
       userName: result.userName,
-      userId: result._id
+      userId: result._id,
+      userRole: result.role
     };
     let secret = 'token'; // 指定密钥
     const token = jwt.sign(userToken, secret); // 签发token
@@ -44,7 +45,8 @@ let userLogin = function * () {
     } else {
       let userToken = {
         userName: result.userName,
-        userId: result._id
+        userId: result._id,
+        userRole: result.role
       };
       let secret = 'token'; // 指定密钥
       const token = jwt.sign(userToken, secret); // 签发token

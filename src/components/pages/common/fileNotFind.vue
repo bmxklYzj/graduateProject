@@ -3,7 +3,8 @@
     <my-header></my-header>
 
     <div class="container">
-      
+      对不起，文件没有找到！
+
     </div>
 
     <my-footer></my-footer>
@@ -18,7 +19,7 @@ export default {
   name: 'hello',
   data () {
     return {
-
+      minnutes: 
     }
   },
   components: {

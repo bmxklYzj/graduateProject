@@ -18,6 +18,10 @@ import AdminQuestion from '@/components/pages/admin/Question';
 import NewQuestion from '@/components/pages/admin/NewQuestion';
 import QuestionList from '@/components/pages/admin/QuestionList';
 
+// common: 没有权限
+import DontHaveAuth from '@/components/pages/common/DontHaveAuth';
+
+
 
 Vue.use(Router);
 
@@ -107,11 +111,21 @@ export default new Router({
       component: QuestionList
     },
 
+
+    // common: 没有权限
+    {
+      path: '/dontHaveAuth',
+      name: 'DontHaveAuth',
+      component: DontHaveAuth
+    },
+
     // other
     {
       path: '*',
       name: 'Index',
       component: Index
     }
+
+
   ]
 });
