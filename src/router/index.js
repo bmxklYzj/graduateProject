@@ -20,7 +20,7 @@ import QuestionList from '@/components/pages/admin/QuestionList';
 
 // common: 没有权限
 import DontHaveAuth from '@/components/pages/common/DontHaveAuth';
-
+import FileNotFind from '@/components/pages/common/FileNotFind';
 
 
 Vue.use(Router);
@@ -119,11 +119,11 @@ export default new Router({
       component: DontHaveAuth
     },
 
-    // other
+    // not fond： 其它未匹配的路由跳到 fileNotFind
     {
-      path: '*',
-      name: 'Index',
-      component: Index
+      path: '/*',
+      name: 'FileNotFind',
+      component: FileNotFind
     }
 
 
