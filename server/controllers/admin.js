@@ -105,9 +105,9 @@ let examQuestionlist = function * () {
 };
 
 module.exports = (router) => {
-  router.post('/admin/question', createQuestion); // 创建试题
-  router.get('/admin/question', questionList); // 获取试题列表
-  router.post('/admin/exam', createExam); // 创建试卷
-  router.get('/admin/exam', examList); // 获取试卷列表
-  router.get('/admin/examquestionlist/:examId', examQuestionlist); // 点击某一个试卷 进入到试题列表，纯展示
+  router.post('/question', createQuestion); // 创建试题
+  router.get('/question', questionList); // 获取试题列表
+  router.post('/exam', createExam); // 创建试卷
+  router.get('/exam', examList); // 获取试卷列表
+  router.get('/examquestionlist/:examId', examQuestionlist); // 点击某一个试卷 进入到试题列表，纯展示
 };

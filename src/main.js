@@ -15,21 +15,22 @@ Vue.use(ElementUI);
 Vue.use(VueResource);
 
 router.beforeEach((to, from, next) => {
-  let token = sessionStorage.getItem('token');
+  let sessionToken = sessionStorage.getItem('token');
   // console.log(token, to, from, next);
   // 有token，如果是登录、注册跳到首页，否则跳到原来的页面
   // 无token，直接跳到登录
-  if (token) {
+  if (sessionToken) {
     if (to.path === '/login' || to.path === '/register') {
       next('/');
     } else {
-      Vue.http.headers.common['Authorization'] = 'Bearer ' + token; // 注意Bearer后有个空格
+      Vue.http.headers.common['Authorization'] = 'Bearer ' + sessionToken; // 注意Bearer后有个空格
       // 普通用户不能访问admin模块，这里使用前端控制的，感觉后端也应该控制下
-      // if (to.path.startsWith('/admin') && !(+token.role === 2 || +token.role === 3)) {
-      //   next('/dontHaveAuth');
-      // } else {
+      let token = util.getUserInfoFromToken();
+      if (to.path.startsWith('/admin') && !(+token.userRole === 2 || +token.userRole === 3)) {
+        next('/dontHaveAuth');
+      } else {
         next();
-      // }
+      }
     }
     // next('/login');
   } else {

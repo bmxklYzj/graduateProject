@@ -91,14 +91,20 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   @import '../../../../static/assets/css/common.less';
-  .container {
-    margin-top: 100px;
-    overflow: hidden;
-  }
-  .el-pagination {
-    float: right;
-    margin-top: 20px;
-  }
 
+  .exam {
+    .container {
+      margin-top: 100px;
+      overflow: hidden;
+    }
+    .el-pagination {
+      float: right;
+      margin-top: 20px;
+    }
+
+    .el-table tr {
+      cursor: pointer;
+    }
+  }
 
 </style>

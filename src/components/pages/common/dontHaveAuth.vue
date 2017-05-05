@@ -3,7 +3,12 @@
     <my-header></my-header>
 
     <div class="container">
-      对不起，您没有权限访问此页面！
+      <div class="img-wrap">
+        <img src="../../../../static/assets/img/403-forbidden.jpg" alt="fileNotFound">
+      </div>
+      <div class="text">
+        对不起，您没有权限访问此页面！
+      </div>
     </div>
 
     <my-footer></my-footer>
@@ -24,9 +29,6 @@ export default {
   components: {
     'my-header': Header,
     'my-footer': Footer
-    // 'component-arousel': componentCarousel,
-    // 'component-grid': componentGrid,
-    // 'component-gap': componentGap
   },
   created: function () {
   },
@@ -39,4 +41,15 @@ export default {
 <style lang="less" scoped>
   @import '../../../../static/assets/css/common.less';
 
+  .container {
+    margin-top: 40px;
+    text-align: center;
+    img {
+      height: 400px;
+    }
+    .text {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="exam">
+  <div class="admin-exam">
     <my-header></my-header>
 
     <div class="container">

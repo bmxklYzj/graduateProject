@@ -1,5 +1,6 @@
 const modelUser = require('../models/user.js');
 const jwt = require('koa-jwt');
+const util = require('../../src/common/util');
 
 const getUserInfo = function* () {
   const id = this.params.id; // 获取url里传过来的参数里的id
@@ -12,13 +13,7 @@ let UserRegister = function * () {
   let result = yield modelUser.UserRegister(params);
   console.log(result);
   if (result) {
-    let userToken = {
-      userName: result.userName,
-      userId: result._id,
-      userRole: result.role
-    };
-    let secret = 'token'; // 指定密钥
-    const token = jwt.sign(userToken, secret); // 签发token
+    const token = util.generateToken(result); // 签发token
     this.body = {
       success: true,
       token: token // 返回token
@@ -43,13 +38,7 @@ let userLogin = function * () {
         info: '密码错误！'
       };
     } else {
-      let userToken = {
-        userName: result.userName,
-        userId: result._id,
-        userRole: result.role
-      };
-      let secret = 'token'; // 指定密钥
-      const token = jwt.sign(userToken, secret); // 签发token
+      const token = util.generateToken(result); // 签发token
       this.body = {
         success: true,
         token: token // 返回token

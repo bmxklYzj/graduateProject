@@ -18,10 +18,10 @@
                   <el-input v-model="form.userName" placeholder="请输入用户名" class="form-item-input"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                  <el-input v-model="form.password" placeholder="请输入密码" class="form-item-input"></el-input>
+                  <el-input v-model="form.password" placeholder="请输入密码" @keyup.enter.native="submitForm('form')" class="form-item-input"></el-input>
                 </el-form-item>
               </el-form>
-              <el-button @click="submitForm('form')" class="login-btn" type="primary">登录</el-button>
+              <el-button  @click="submitForm('form')" class="login-btn" type="primary submit">登录</el-button>
               <a class="register-btn" href="#register">还没有注册？点此注册</a>
             </div>
           </el-col>

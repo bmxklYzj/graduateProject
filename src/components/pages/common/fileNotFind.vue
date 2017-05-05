@@ -3,8 +3,13 @@
     <my-header></my-header>
 
     <div class="container">
-      对不起，文件没有找到！
+      <div class="img-wrap">
+        <img src="../../../../static/assets/img/404-fileNotFound.png" alt="fileNotFound">
+      </div>
+      <div class="text">
+        对不起，文件没有找到！
       {{minute}} 秒后跳转到首页。
+      </div>
     </div>
 
     <my-footer></my-footer>
@@ -30,7 +35,7 @@ export default {
     // 'component-gap': componentGap
   },
   created: function () {
-    this.minuteDescSetTimeout();
+    // this.minuteDescSetTimeout();
   },
   methods: {
     minuteDescSetTimeout() {
@@ -52,4 +57,16 @@ export default {
 <style lang="less" scoped>
   @import '../../../../static/assets/css/common.less';
 
+
+  .container {
+    margin-top: 20px;
+    text-align: center;
+    img {
+      height: 400px;
+    }
+    .text {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  }
 </style>

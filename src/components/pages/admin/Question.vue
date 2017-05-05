@@ -183,8 +183,8 @@ export default {
           }
           let token = util.getUserInfoFromToken() || {};
           let params = {
-            createUserId: tokekn.userId,
-            createUserName: tokekn.userName,
+            createUserId: token.userId,
+            createUserName: token.userName,
             description: this.ruleForm.examDescription,
             question: this.multipleSelection
           };
@@ -256,6 +256,7 @@ export default {
     line-height: 1.5;
     &-image-wrap {
       img {
+        border: 2px solid @blue;
         height: 100px;
         margin-right: 30px;
       }

@@ -5,6 +5,7 @@ let logger = require('koa-logger');
 let auth = require('./server/routes/auth.js'); // 引入auth
 let jwt = require('koa-jwt');
 let api = require('./server/routes/api');
+let noAuth = require('./server/routes/noAuth');
 
 var parse = require('co-busboy');
 var os = require('os');
@@ -43,11 +44,10 @@ app.use(function *(next) {  //  如果JWT验证失败，返回验证失败信息
 app.on('error', function (err, ctx) {
   console.log('server error', err);
 });
-// koa.use('/unauth', apiUnAuth.routes());
 
 // 图片上传
 app.use(function * (next) {
-  console.log('hello');
+  console.log('hello image');
   // ignore non-POSTs
   if (!('POST' === this.method && this.path === '/auth/admin/imageUpload')) return yield next;
 
@@ -70,9 +70,11 @@ app.use(function * (next) {
 });
 
 // 挂载到koa-router上，同时会让所有的auth的请求路径前面加上'/auth'的请求路径。
-koa.use('/auth', auth.routes());
+koa.use('/auth/', auth.routes());
 // 所有走/api/打头的请求都需要经过jwt验证。
-koa.use('/api', jwt({secret: 'token'}), api.routes());
+koa.use('/api/admin/', jwt({secret: 'token'}), api.routes());
+// 前台接口，不要权限验证，restful接口
+koa.use('/api/', noAuth.routes());
 
 
 app.use(koa.routes()); // 将路由规则挂载到Koa上。
