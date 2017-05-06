@@ -147,12 +147,23 @@ export default {
           this.exam = data.list;
           this.totalCnt = data.totalCnt;
           this.exam.forEach((item, index) => {
-            this.exam[index].radio = '';
-            item.checkbox = [];
-            item.textarea = [];
+            /*
+            这里遇到了诡异的bug：当 exam数据是直接模拟的、或者是后端返回了radio='',
+            那么在table中每个radio是互不影响的。
+            但是如果后端没返回，我在这里的forEach中手动加上去，就会有问题，总是不能刷新radio，点击了没反应
+            我觉得肯定是跟vue、element-ui的生命周期有关。坑了我三四个小时啊！
+
+            暂时就不解决radio和checkbox了，textarea每个是分离的好使着，就保留着
+            */
+            if (+item.type === 3) {
+              item.textarea = [];
+            }
             item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
             item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
           });
+          // for (let i = 0, len = this.exam.length; i < len; i++) {
+          //   this.exam[i].radio = '';
+          // }
           console.log(this.exam);
         }, response => {
       });
