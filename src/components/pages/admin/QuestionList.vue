@@ -190,6 +190,7 @@ export default {
     line-height: 1.5;
     &-image-wrap {
       img {
+        border: 2px solid @blue;
         height: 100px;
         margin-right: 30px;
       }

@@ -1,6 +1,8 @@
 let mongoose = require('../config/mongoose');
 let questionSchema = require('../schema/question');
 
+let globalConfig = require('../../src/common/globalConfig');
+
 let Question = mongoose.model('Question', questionSchema);
 
 let createQuestion = function * (params) {
@@ -20,8 +22,17 @@ let createQuestion = function * (params) {
   return info;
 };
 
-let questionList = function * () {
-  let info = yield Question.find({});
+let questionList = function * (params) {
+  let userId = params.userId;
+  let options = {};
+  if (userId) {
+    options = {'createUserId': userId};
+  }
+  let pageSize = +params.pageSize || globalConfig.pageSize;
+  let currentPage = +params.currentPage || globalConfig.currentPage;
+
+  let info = yield Question.find(options).sort({'_id': -1}).skip((currentPage - 1) * pageSize
+  ).limit(pageSize);
   return info;
 };
 
@@ -32,8 +43,19 @@ let getQuestionById = function * (questionId) {
   return dbResult;
 };
 
+let countQuestion = function * (params) {
+  let userId = params.userId;
+  let options = {};
+  if (userId) {
+    options = {'createUserId': userId};
+  }
+  let dbResult = yield Question.count(options);
+  return dbResult;
+};
+
 module.exports = {
   createQuestion,
   questionList,
-  getQuestionById
+  getQuestionById,
+  countQuestion
 };

@@ -3,7 +3,7 @@
     <div class="head">精华{{title}}推荐</div>
     <ul>
       <li v-for="(item, index) in list">
-        <span class="title">{{item.title}}</span>
+        <span class="title">{{item.description}}</span>
         <span class="heat">热度：{{item.heat}}</span>
         <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
       </li>
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+let globalConfig = require('../../src/common/globalConfig.js');
 
 export default {
   name: 'hello',
@@ -28,23 +29,32 @@ export default {
   },
   data () {
     return {
-      list: []
+      list: [],
+
+      // 分页
+      pageSize: globalConfig.indexListCnt,
+      currentPage: 1
+      
     }
   },
   components: {
-    // 'component-index-header': componentIndexHeader,
-    // 'component-arousel': componentCarousel,
-    // 'component-grid': componentGrid,
-    // 'component-gap': componentGap
+
   },
   created: function () {
     this.getList();
   },
   methods: {
     getList: function () {
-      this.$http.get('./api/index_list.ajax').then(response => {
-        this.list = response.body.data;
-        // this.swipeArray = response.body.data;
+      let urlType = 'exam';
+      if (this.title === '试题') {
+        urlType = 'question';
+      }
+      this.$http.get('./api/' + urlType
+        + '?pageSize=' + this.pageSize
+        + '&currentPage=' + this.currentPage
+      ).then(response => {
+        let data = response.body.data;
+        this.list = data.list;
         }, response => {
       });
     }

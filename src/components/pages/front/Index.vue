@@ -45,11 +45,11 @@ export default {
     'my-footer': Footer
   },
   created: function () {
-    this.$http.get('./api/index_carsousel.ajax').then(response => {
-      this.carsousel = response.body.data;
-      // this.swipeArray = response.body.data;
-      }, response => {
-    });
+    // this.$http.get('./api/index_carsousel.ajax').then(response => {
+    //   this.carsousel = response.body.data;
+    //   // this.swipeArray = response.body.data;
+    //   }, response => {
+    // });
   },
   methods: {
 

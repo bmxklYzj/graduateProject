@@ -45,8 +45,13 @@
 
       <!--分页-->
       <el-pagination
-        layout="prev, pager, next"
-        :total="1000">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 5, 20, 50, 100, 200, 500]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCnt">
       </el-pagination>
     </div>
 
@@ -59,12 +64,21 @@ let moment = require('moment');
 import AdminHeader from '../../common/AdminHeader.vue'
 import Footer from '../../common/Footer.vue'
 
+let util = require('../../../common/util.js');
+let globalConfig = require('../../../common/globalConfig.js');
+
 export default {
   name: 'hello',
   data () {
     return {
+      token: '',
 
-      exam: []
+      exam: [],
+
+      // 分页
+      pageSize: globalConfig.pageSize,
+      currentPage: 1,
+      totalCnt: 0,
     }
   },
   components: {
@@ -72,17 +86,23 @@ export default {
     'my-footer': Footer
   },
   created: function () {
+    this.token = util.getUserInfoFromToken() || {};
     this.getExam();
   },
   methods: {
     getExam: function () {
-      this.$http.get('/api/admin/exam').then(response => {
-        this.exam = response.body.data;
-        this.exam = response.body.data;
+      this.$http.get('/api/admin/exam'
+      + '?userId=' + this.token.userId
+      + '&pageSize=' + this.pageSize
+      + '&currentPage=' + this.currentPage
+      ).then(response => {
+        let data = response.body.data;
+        this.exam = data.list;
+        this.totalCnt = data.totalCnt;
         this.exam.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
           item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
-        })
+        });
         }, response => {
       });
     },
@@ -91,6 +111,15 @@ export default {
     },
     goQuestionList: function (row, event, column) {
       this.$router.push('/admin/questionlist/' + row._id);
+    },
+    // 分页功能
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getExam();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getExam();
     }
   }
 }

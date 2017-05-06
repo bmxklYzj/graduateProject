@@ -21,6 +21,8 @@
 <script>
 import jwt from 'jsonwebtoken';
 
+let util = require('../../common/util.js');
+
 export default {
   name: 'hello',
   data () {
@@ -33,25 +35,18 @@ export default {
 
   },
   created: function () {
-    let userInfo = this.getUserInfoFromToken();
+    let userInfo = util.getUserInfoFromToken();
     console.log(userInfo);
     this.userName = userInfo.userName;
   },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
+      this.activeIndex = key;
       if (key === '3-3') {
         sessionStorage.removeItem('token');
         this.$router.push('/');
       }
-    },
-    getUserInfoFromToken () {
-      let token = sessionStorage.getItem('token');
-      if (token) {
-        let decode = jwt.verify(token, 'token');
-        return decode || {};
-      }
-      return {};
     }
   }
 }

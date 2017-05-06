@@ -91,8 +91,13 @@
 
       <!--分页-->
       <el-pagination
-        layout="prev, pager, next"
-        :total="1000">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 5, 20, 50, 100, 200, 500]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCnt">
       </el-pagination>
 
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" label-position="top" class="question-new-exam">
@@ -118,11 +123,19 @@ import AdminHeader from '../../common/AdminHeader.vue'
 import Footer from '../../common/Footer.vue'
 
 let util = require('../../../common/util.js');
+let globalConfig = require('../../../common/globalConfig.js');
 
 export default {
   name: 'hello',
   data () {
     return {
+      token: '',
+
+      // 分页
+      pageSize: globalConfig.pageSize,
+      currentPage: 1,
+      totalCnt: 300,
+
       // 图片模态框
       dialogVisible: false,
       dialogImageUrl: '',
@@ -148,12 +161,19 @@ export default {
     'my-footer': Footer
   },
   created: function () {
+    this.token = util.getUserInfoFromToken() || {};
     this.getQuestion();
   },
   methods: {
     getQuestion: function () {
-      this.$http.get('./api/admin/question').then((response) => {
-        this.question = response.body.data;
+      this.$http.get('./api/admin/question'
+      + '?userId=' + this.token.userId
+      + '&pageSize=' + this.pageSize
+      + '&currentPage=' + this.currentPage
+      ).then((response) => {
+        let data = response.body.data;
+        this.question = data.list;
+        this.totalCnt = data.totalCnt;
         this.question.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
           item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
@@ -181,10 +201,9 @@ export default {
             this.$message.error("请先选择试题！");
             return;
           }
-          let token = util.getUserInfoFromToken() || {};
           let params = {
-            createUserId: token.userId,
-            createUserName: token.userName,
+            createUserId: this.token.userId,
+            createUserName: this.token.userName,
             description: this.ruleForm.examDescription,
             question: this.multipleSelection
           };
@@ -205,6 +224,15 @@ export default {
     imagePreview(url) {
       this.dialogVisible = true;
       this.dialogImageUrl = url;
+    },
+    // 分页功能
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getQuestion();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getQuestion();
     }
   }
 }

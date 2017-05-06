@@ -28,6 +28,7 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
+      this.activeIndex = key;
       if (+key === 4) {
         sessionStorage.removeItem('token');
         this.$router.push('/');

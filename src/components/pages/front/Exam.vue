@@ -10,25 +10,25 @@
           stripe
           style="width: 100%">
           <el-table-column
-          prop="title"
+          prop="description"
           label="试卷名称"
           :width="512"
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
-          prop="createUser"
+          prop="createUserName"
           label="创建人"
           :width="150">
           </el-table-column>
           <el-table-column
           prop="createTime"
           label="创建时间"
-          :width="150">
+          :width="180">
           </el-table-column>
           <el-table-column
           prop="finishedCnt"
           label="已作答人数"
-          :width="150">
+          :width="120">
           </el-table-column>
           <el-table-column
           prop="heat"
@@ -40,8 +40,13 @@
 
       <!--分页-->
       <el-pagination
-        layout="prev, pager, next"
-        :total="1000">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 5, 20, 50, 100, 200, 500]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCnt">
       </el-pagination>
     </div>
 
@@ -52,6 +57,9 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
+
+let moment = require('moment');
+let globalConfig = require('../../../common/globalConfig.js');
 
 export default {
   name: 'hello',
@@ -64,7 +72,12 @@ export default {
       //   "finishedCnt": ~~(Math.random() * 10) + 1,
       //   "heat":  ~~(Math.random() * 10) + 1
       // }
-      exam: []
+      exam: [],
+
+      // 分页
+      pageSize: globalConfig.pageSize,
+      currentPage: 1,
+      totalCnt: 300,
     }
   },
   components: {
@@ -79,10 +92,28 @@ export default {
   },
   methods: {
     getExam: function () {
-      this.$http.get('./api/exam.ajax').then(response => {
-        this.exam = response.body.data;
+      this.$http.get('./api/exam'
+      + '?pageSize=' + this.pageSize
+      + '&currentPage=' + this.currentPage
+      ).then(response => {
+        let data = response.body.data;
+        this.exam = data.list;
+        this.totalCnt = data.totalCnt;
+        this.exam.forEach((item) => {
+          item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
+          item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
+        })
         }, response => {
       });
+    },
+    // 分页功能
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getExam();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getExam();
     }
   }
 }

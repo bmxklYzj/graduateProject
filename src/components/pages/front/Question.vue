@@ -13,42 +13,63 @@
           <el-table-column type="expand">
             <template scope="props">
               <div class="question-item">
-                <p class="question-desc">题目描述：{{props.row.title}}</p>
-                  <!--多选-->
-                  <el-checkbox-group v-model="checkList" v-if="+props.row.type === 2">
-                    <!--<div v-for="(item, index) in props.row.options" class="question-desc-label">-->
+                <p class="question-desc">题目描述：{{props.row.description}}</p>
 
-                      <el-checkbox :label="index" v-for="(item, index) in props.row.options">
-                        <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
-                        {{item}}
-                      </el-checkbox>
-                    <!--</div>-->
-                    <el-button type="primary" class="question-desc-btn">提交答案</el-button>
-                  </el-checkbox-group>
+                <!--图片-->
+                <div class="question-desc-image-wrap">
+                  <img @click="imagePreview(item)" v-for="(item, index) in props.row.image" :src="item" alt="image">
+                </div>
+                <el-dialog v-model="dialogVisible" size="tiny">
+                  <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
+
+                <!--单选-->
+                <el-radio-group v-model="props.row.radio" v-if="+props.row.type === 1">
+                  <el-radio :label="index" v-for="(item, index) in props.row.option" :key="index">
+                    <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
+                    {{index}}
+                    {{props.row.radio}}
+                  </el-radio>
+                </el-radio-group>
+                <!--多选-->
+                <el-checkbox-group v-model="props.row.checkbox" v-if="+props.row.type === 2">
+                  <el-checkbox :label="index" v-for="(item, index) in props.row.option">
+                    <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
+                    {{index}}
+                  </el-checkbox>
+                </el-checkbox-group>
+                <!--填空、问答题-->
+                <el-input v-if="+props.row.type === 3"
+                  type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  placeholder="请输入您的答案"
+                  v-model="props.row.textarea">
+                </el-input>
+                <el-button @click="answerQuestion(props.row)" type="primary" class="question-desc-btn">提交答案</el-button>
               </div>
             </template>
           </el-table-column>
 
           <el-table-column
-          prop="title"
+          prop="description"
           label="试卷名称"
           :width="460"
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
-          prop="createUser"
+          prop="createUserName"
           label="创建人"
           :width="150">
           </el-table-column>
           <el-table-column
           prop="createTime"
           label="创建时间"
-          :width="150">
+          :width="180">
           </el-table-column>
           <el-table-column
           prop="finishedCnt"
           label="已作答人数"
-          :width="150">
+          :width="120">
           </el-table-column>
           <el-table-column
           prop="heat"
@@ -60,8 +81,13 @@
 
       <!--分页-->
       <el-pagination
-        layout="prev, pager, next"
-        :total="1000">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 5, 20, 50, 100, 200, 500]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="totalCnt">
       </el-pagination>
     </div>
 
@@ -73,10 +99,21 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
+let moment = require('moment');
+let globalConfig = require('../../../common/globalConfig.js');
+
+
 export default {
   name: 'hello',
   data () {
     return {
+      radio: '',
+      checkbox: [],
+      textarea: '',
+
+      // 图片模态框
+      dialogVisible: false,
+      dialogImageUrl: '',
       // {
       //   "title": "春季校园招聘-互联网公司面试题：内含题目解答",
       //   "createUser": "张三李四",
@@ -85,25 +122,56 @@ export default {
       //   "heat":  ~~(Math.random() * 10) + 1
       // }
       exam: [],
-      checkList: [] // 多选的数组
+      // checkList: [], // 多选的数组
+
+      // 分页
+      pageSize: globalConfig.pageSize,
+      currentPage: 1,
+      totalCnt: 0,
     }
   },
   components: {
     'my-header': Header,
     'my-footer': Footer
-    // 'component-arousel': componentCarousel,
-    // 'component-grid': componentGrid,
-    // 'component-gap': componentGap
   },
   created: function () {
     this.getQuestion();
   },
   methods: {
     getQuestion: function () {
-      this.$http.get('./api/question.ajax').then(response => {
-        this.exam = response.body.data;
+      this.$http.get('./api/question'
+        + '?pageSize=' + this.pageSize
+        + '&currentPage=' + this.currentPage
+        ).then(response => {
+          let data = response.body.data;
+          this.exam = data.list;
+          this.totalCnt = data.totalCnt;
+          this.exam.forEach((item, index) => {
+            this.exam[index].radio = '';
+            item.checkbox = [];
+            item.textarea = [];
+            item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
+            item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
+          });
+          console.log(this.exam);
         }, response => {
       });
+    },
+    answerQuestion(row) {
+      console.log(row, this);
+    },
+    imagePreview(url) {
+      this.dialogVisible = true;
+      this.dialogImageUrl = url;
+    },
+    // 分页功能
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getQuestion();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getQuestion();
     }
   }
 }
@@ -126,16 +194,28 @@ export default {
   }
 
   .question-desc {
+    // margin-bottom: 40px;
+    &-image-wrap {
+      margin-bottom: 40px;
+      img {
+        border: 2px solid @blue;
+        height: 100px;
+        margin-right: 30px;
+      }
+    }
     &-label-span {
       margin:0 20px 0 10px;
     }
 
     &-btn {
-      margin-top: 20px;
+      display: block;
+      margin-top: 40px;
     }
   }
 
-  .el-checkbox {
+  .el-checkbox,
+  .el-radio,
+  .el-textarea {
     display: block;
     margin: 15px 0;
     white-space: normal;

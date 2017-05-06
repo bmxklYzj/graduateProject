@@ -1,6 +1,7 @@
 let jwt = require('jsonwebtoken');
 
 module.exports = {
+  // 创建token
   generateToken: function (user) {
     let userToken = {
       userName: user.userName,
@@ -10,6 +11,7 @@ module.exports = {
     let secret = 'token'; // 指定密钥
     return jwt.sign(userToken, secret) || '';
   },
+  // 解析token
   getUserInfoFromToken: function () {
     let token = sessionStorage.getItem('token');
     if (token) {
