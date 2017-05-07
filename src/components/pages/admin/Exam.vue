@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     getExam: function () {
-      this.$http.get('/api/admin/exam'
+      this.$http.get('/api/auth/exam'
       + '?userId=' + this.token.userId
       + '&pageSize=' + this.pageSize
       + '&currentPage=' + this.currentPage
@@ -107,7 +107,7 @@ export default {
       });
     },
     newExam: function () {
-      location.hash = '#admin/question';
+      location.hash = '#auth/question';
     },
     goQuestionList: function (row, event, column) {
       this.$router.push('/admin/questionlist/' + row._id);

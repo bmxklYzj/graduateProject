@@ -131,7 +131,7 @@ export default {
         answer: this.answer,
         image: this.image
       };
-      this.$http.post('api/admin/question', params).then(response => {
+      this.$http.post('api/auth/question', params).then(response => {
         var data = response.body || {};
         if (data.success) {
           this.$message.success('创建成功！');

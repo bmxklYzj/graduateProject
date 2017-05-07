@@ -2,9 +2,9 @@ let app = require('koa')();
 let koa = require('koa-router')();
 let json = require('koa-json');
 let logger = require('koa-logger');
-let auth = require('./server/routes/auth.js'); // 引入auth
+let doAuth = require('./server/routes/doAuth.js'); // 引入auth
 let jwt = require('koa-jwt');
-let api = require('./server/routes/api');
+let auth = require('./server/routes/auth');
 let noAuth = require('./server/routes/noAuth');
 
 var parse = require('co-busboy');
@@ -70,9 +70,9 @@ app.use(function * (next) {
 });
 
 // 挂载到koa-router上，同时会让所有的auth的请求路径前面加上'/auth'的请求路径。
-koa.use('/auth/', auth.routes());
-// 所有走/api/打头的请求都需要经过jwt验证。
-koa.use('/api/admin/', jwt({secret: 'token'}), api.routes());
+koa.use('/doAuth/', doAuth.routes());
+// 所有走/api/admin打头的请求都需要经过jwt验证。
+koa.use('/api/auth/', jwt({secret: 'token'}), auth.routes());
 // 前台接口，不要权限验证，restful接口
 koa.use('/api/', noAuth.routes());
 

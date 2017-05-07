@@ -105,7 +105,7 @@ export default {
         userName: this.form.userName,
         password: this.form.password
       };
-      this.$http.post('auth/userLogin', params).then(response => {
+      this.$http.post('doAuth/userLogin', params).then(response => {
         var data = response.body || {};
         if (data.success) {
           this.$message.success('登录成功！');

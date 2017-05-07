@@ -1,7 +1,8 @@
-
-const user = require('../controllers/user.js');
+// const question = require('../controllers/question.js');
+const auth = require('../controllers/auth.js');
 const router = require('koa-router')();
 
-user.auth(router); // 用user的auth方法引入router
+auth(router);
 
-module.exports = router; // 把router规则暴露出去
+module.exports = router;
+

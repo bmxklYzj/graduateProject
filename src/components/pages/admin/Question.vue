@@ -166,7 +166,7 @@ export default {
   },
   methods: {
     getQuestion: function () {
-      this.$http.get('./api/admin/question'
+      this.$http.get('./api/auth/question'
       + '?userId=' + this.token.userId
       + '&pageSize=' + this.pageSize
       + '&currentPage=' + this.currentPage
@@ -207,7 +207,7 @@ export default {
             description: this.ruleForm.examDescription,
             question: this.multipleSelection
           };
-          this.$http.post('./api/admin/exam', params).then((response) => {
+          this.$http.post('./api/auth/exam', params).then((response) => {
             var data = response.body || {};
             if (data.success) {
               this.$message.success('创建成功！');

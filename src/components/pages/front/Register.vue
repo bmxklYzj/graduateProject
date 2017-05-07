@@ -172,7 +172,7 @@ export default {
         introduce: this.form.introduce,
         interest: this.form.interest.join(',')
       };
-      this.$http.post('auth/userRegister', params).then(response => {
+      this.$http.post('doAuth/userRegister', params).then(response => {
         var data = response.body || {};
         if (data.success) {
           this.$message.success('注册成功！');

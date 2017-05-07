@@ -28,7 +28,7 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/auth/': {
+      '/doAuth/': {
         target: 'http://localhost:8889',
         changeOrigin: true
       },

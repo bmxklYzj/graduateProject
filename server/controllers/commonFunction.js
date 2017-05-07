@@ -4,9 +4,9 @@ let examModel = require('../models/exam');
 
 // newquestion 创建题目
 let createQuestion = function * () {
-  let params = this.request.body;
-  let dbResult = yield questionModel.createQuestion(params);
-  console.log(params, dbResult);
+  let postBody = this.request.body;
+  let dbResult = yield questionModel.createQuestion(postBody);
+  console.log(postBody, dbResult);
   if (dbResult) {
     this.body = {
       success: true,
@@ -22,7 +22,9 @@ let createQuestion = function * () {
 
 // question 获取题目列表
 let questionList = function * () {
-  let dbResult = yield questionModel.questionList(this.query
+  let token = this.request.header.authorization.split('Bearer ')[1];
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
+  let dbResult = yield questionModel.questionList(this.query, renderAnswer, token
   );
   let count = yield questionModel.countQuestion(this.query);
   if (dbResult) {
@@ -48,8 +50,8 @@ let questionList = function * () {
 
 // exam 创建试卷
 let createExam = function * () {
-  let params = this.request.body;
-  let dbResult = yield examModel.createExam(params);
+  let postBody = this.request.body;
+  let dbResult = yield examModel.createExam(postBody);
   if (dbResult) {
     this.body = {
       success: true,
@@ -90,13 +92,15 @@ let examList = function * () {
 
 // 点击某一个试卷 进入到试题列表，纯展示
 let examQuestionlist = function * () {
+  let token = this.request.header.authorization.split('Bearer ')[1];
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
   var examId = this.params.examId;
   let dbResult = yield examModel.getExamById(examId);
   let questionResult = [];
   if (dbResult) {
     let questionArray = dbResult.question;
     for (let i = 0, len = questionArray.length; i < len; i++) {
-      let item = yield questionModel.getQuestionById(questionArray[i]);
+      let item = yield questionModel.getQuestionById(questionArray[i], renderAnswer, token);
       questionResult.push(item);
       console.log(2, questionResult);
     }
@@ -113,10 +117,33 @@ let examQuestionlist = function * () {
   }
 };
 
+// 用户做某一个题接口
+let userDoQuestion = function * () {
+  let postBody = this.request.body || {};
+  // 1. 更新question表中的userDone
+  // 2. 更新user表中的question
+  let userResult = yield userModel.userDoQuestion(postBody);
+  let questionAnswer = yield questionModel.getAnswerById(postBody.questionId);
+  
+  console.log(postBody, dbResult);
+  if (dbResult) {
+    this.body = {
+      success: true,
+      info: '创建试题成功！'
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '创建试题失败！'
+    };
+  }
+};
+
 module.exports = {
   createQuestion,
   questionList,
   createExam,
   examList,
-  examQuestionlist
+  examQuestionlist,
+  userDoQuestion
 };

@@ -53,7 +53,7 @@ let userLogin = function * () {
 };
 
 module.exports = {
-  auth: (router) => {
+  doAuth: (router) => {
     router.get('/user/:id', getUserInfo); // 定义url的参数是id
     router.post('/userRegister', UserRegister); // 注册
     router.post('/userLogin', userLogin); // 登录

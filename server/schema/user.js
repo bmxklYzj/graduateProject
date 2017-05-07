@@ -17,9 +17,9 @@ var UserSchema = new Schema({
   interest: {type: String}, // 兴趣
 
   // 数组类型
-  questions: {type: Array}, // 该用户做过的试题
-  exams: {type: Array}, // 该用户做过的试卷
-  comments: {type: Array}, // 该用户的评论
+  question: {type: Array}, // 该用户做过的试题 每一项的格式：{questionId: ObjectID, answer: [], result: Boolean}
+  exam: {type: Array}, // 该用户做过的试卷
+  comment: {type: Array}, // 该用户的评论
   like: {type: Array} // 试题的点赞
 });
 

@@ -36,9 +36,16 @@ let UserRegister = function * (params) {
   return userInfo;
 };
 
+// 用户做某一个题接口: 将questionId push进 user表question
+let userDoQuestion = function * (params) {
+  let dbResult = yield User.update({'_id': params.userId},
+  {$push: {'question': params.questionId}});
+  return dbResult;
+};
 
 module.exports = {
   getUserById,
   getUserByName,
-  UserRegister
+  UserRegister,
+  userDoQuestion
 };

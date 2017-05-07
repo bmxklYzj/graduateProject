@@ -24,7 +24,7 @@
                 </el-dialog>
 
                 <!--单选-->
-                <el-radio-group v-model="props.row.radio" v-if="+props.row.type === 1">
+                <el-radio-group v-model="radio" v-if="+props.row.type === 1">
                   <el-radio :label="index" v-for="(item, index) in props.row.option" :key="index">
                     <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
                     {{index}}
@@ -32,7 +32,7 @@
                   </el-radio>
                 </el-radio-group>
                 <!--多选-->
-                <el-checkbox-group v-model="props.row.checkbox" v-if="+props.row.type === 2">
+                <el-checkbox-group v-model="checkbox" v-if="+props.row.type === 2">
                   <el-checkbox :label="index" v-for="(item, index) in props.row.option">
                     <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
                     {{index}}
@@ -46,6 +46,18 @@
                   v-model="props.row.textarea">
                 </el-input>
                 <el-button @click="answerQuestion(props.row)" type="primary" class="question-desc-btn">提交答案</el-button>
+
+                <!--答案-->
+                <div class="question-desc-answer" v-if="props.row.showAnswer">
+                  <p>答案：</p>
+                  <template v-if="+props.row.type !== 3">
+                    <span v-for="(item, index) in props.row.answer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
+                  </template>
+                  <template v-else>
+                    <span v-for="(item, index) in props.row.answer">{{item}}</span>
+                  </template>
+                </div>
+
               </div>
             </template>
           </el-table-column>
@@ -100,6 +112,7 @@ import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
 let moment = require('moment');
+let util = require('../../../common/util.js');
 let globalConfig = require('../../../common/globalConfig.js');
 
 
@@ -158,18 +171,47 @@ export default {
             if (+item.type === 3) {
               item.textarea = [];
             }
+            item.showAnswer = false;
             item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
             item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
           });
           // for (let i = 0, len = this.exam.length; i < len; i++) {
           //   this.exam[i].radio = '';
           // }
-          console.log(this.exam);
         }, response => {
       });
     },
     answerQuestion(row) {
       console.log(row, this);
+      row.radio = 3;
+      row.answer = [1];
+      row.showAnswer = true;
+
+      let token = util.getUserInfoFromToken() || {};
+      let params = {
+        userId: token.userId,
+        questionId: row._id,
+      };
+      // 单选
+      if (+row.type === 1) {
+        params.answer = [this.radio];
+      } else if (+row.type === 2) {
+        params.answer = this.checkbox;
+      } else if (+row.type === 3) {
+        params.answer = [row.textarea];
+      }
+      // 用户做某一个题接口
+      this.$http.post('api/auth/userDoQuestion', params).then(response => {
+        var data = response.body || {};
+        if (data.success) {
+          this.$message.success('提交成功！');
+          this.$router.push('/admin/question');
+        } else {
+          this.$message.error('提交失败！');
+        }
+      }, response => {
+        this.$message.error('提交失败！');
+      });
     },
     imagePreview(url) {
       this.dialogVisible = true;
@@ -213,6 +255,9 @@ export default {
         height: 100px;
         margin-right: 30px;
       }
+    }
+    &-answer {
+      margin-top: 40px;
     }
     &-label-span {
       margin:0 20px 0 10px;

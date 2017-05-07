@@ -22,24 +22,32 @@ let createQuestion = function * (params) {
   return info;
 };
 
-let questionList = function * (params) {
+let questionList = function * (params, renderAnswer) {
   let userId = params.userId;
   let options = {};
   if (userId) {
     options = {'createUserId': userId};
   }
+  let renderAnswerOption = {};
+  if (!renderAnswer) {
+    renderAnswerOption = {'answer': 0};
+  }
   let pageSize = +params.pageSize || globalConfig.pageSize;
   let currentPage = +params.currentPage || globalConfig.currentPage;
 
-  let info = yield Question.find(options).sort({'_id': -1}).skip((currentPage - 1) * pageSize
+  let info = yield Question.find(options, renderAnswerOption).sort({'_id': -1}).skip((currentPage - 1) * pageSize
   ).limit(pageSize);
   return info;
 };
 
-let getQuestionById = function * (questionId) {
+let getQuestionById = function * (questionId, renderAnswer) {
+  let renderAnswerOption = {};
+  if (!renderAnswer) {
+    renderAnswerOption = {'answer': 0};
+  }
   let dbResult = yield Question.findOne({
     _id: questionId
-  });
+  }, renderAnswerOption);
   return dbResult;
 };
 
