@@ -4,35 +4,104 @@
 
     <div class="container">
       <!--列表-->
-      <div class="exam-table">
-        <div class="exam-table-head">
-          <span class="th1"></span>
-          <span class="th2">试卷名称</span>
-          <span class="th3">创建人</span>
-          <span class="th4">创建时间</span>
-          <span class="th5">已作答人数</span>
-          <span class="th6">热度</span>
-        </div>
-        <div class="exam-table-body" v-for="(item, index) in exam"  :key="index">
-          <div class="exam-table-body-row" @click="clickTr(item, index)">
-            <span class="th1"></span>
-            
-            <span class="th2" :title="item.description">{{item.description}}</span>
-            <span class="th3">{{item.createUserName}}</span>
-            <span class="th4">{{item.createTime}}</span>
-            <span class="th5">{{item.finishedCnt}}<input type="text" v-model="item.createUserName">{{item.createUserName}}</span>
-            <span class="th6">{{item.heat}}{{item.showContent}}</span>
-          </div>
-          <div class="exam-table-body-content" v-show="item.showContent">
-            <span class="th1"></span>
-            <span class="th2" :title="item.description">{{item.description}}</span>
-            <span class="th3">{{item.createUserName}}</span>
-            <span class="th4">{{item.createTime}}</span>
-            <span class="th5">{{item.finishedCnt}}</span>
-            <span class="th6">{{item.heat}}{{item.showContent}}</span>
-          </div>
-        </div>
-      </div>
+      <template>
+        <el-table
+          :data="exam"
+          stripe
+          :row-click="clickTr"
+          style="width: 100%">
+
+          <el-table-column type="expand">
+            <template scope="props">
+              <div class="question-item">
+                <p class="question-desc">题目描述：{{props.row.description}}</p>
+
+                <!--图片-->
+                <div class="question-desc-image-wrap">
+                  <img @click="imagePreview(item)" v-for="(item, index) in props.row.image" :src="item" alt="image">
+                </div>
+                <el-dialog v-model="dialogVisible" size="tiny">
+                  <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
+
+                <!--单选-->
+                <div class="radio" v-if="+props.row.type === 1">
+                  <span v-for="(item, index) in props.row.option" :key="index">
+                    <label><input type="radio" :name="props.row._id + 'radiov'" :value="index" v-model="props.row.radio">{{item}}-{{index}}</label>
+                  </span>
+                </div>
+                <!--多选-->
+                <div class="check-box" v-if="+props.row.type === 2">
+                  <span v-for="(item, index) in props.row.option">
+                    <label><input type="checkbox" :name="props.row._id + 'checkbox'" :value="index" v-model="props.row.radio">{{item}}-{{index}}</label>
+                  </span>
+                </div>
+                <!--<el-radio-group v-model="props.row.radio" v-if="+props.row.type === 1">
+                  <el-radio :label="index" v-for="(item, index) in props.row.option" :key="index">
+                    <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
+                    {{index}}
+                    {{props.row.radio}}
+                  </el-radio>
+                </el-radio-group>-->
+                <!--多选-->
+                <!--<el-checkbox-group v-model="props.row.checkbox" v-if="+props.row.type === 2">
+                  <el-checkbox :label="index" v-for="(item, index) in props.row.option">
+                    <span class="question-desc-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
+                    {{index}}
+                  </el-checkbox>
+                </el-checkbox-group>-->
+                <!--填空、问答题-->
+                <el-input v-if="+props.row.type === 3"
+                  type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  placeholder="请输入您的答案"
+                  v-model="props.row.textarea">
+                </el-input>
+                <el-button @click="answerQuestion(props.row)" type="primary" class="question-desc-btn">提交答案</el-button>
+
+                <!--答案-->
+                <div class="question-desc-answer" v-if="props.row.showAnswer">
+                  <p>答案：</p>
+                  <template v-if="+props.row.type !== 3">
+                    <span v-for="(item, index) in props.row.answer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
+                  </template>
+                  <template v-else>
+                    <span v-for="(item, index) in props.row.answer">{{item}}</span>
+                  </template>
+                </div>
+
+              </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+          prop="description"
+          label="试卷名称"
+          :width="460"
+          :show-overflow-tooltip="true">
+          </el-table-column>
+          <el-table-column
+          prop="createUserName"
+          label="创建人"
+          :width="150">
+          </el-table-column>
+          <el-table-column
+          prop="createTime"
+          label="创建时间"
+          :width="180">
+          </el-table-column>
+          <el-table-column
+          prop="finishedCnt"
+          label="已作答人数"
+          :width="120">
+          </el-table-column>
+          <el-table-column
+          prop="heat"
+          label="热度"
+          :width="150">
+          </el-table-column>
+        </el-table>
+      </template>
 
       <!--分页-->
       <el-pagination
@@ -95,6 +164,7 @@ export default {
   },
   methods: {
     getQuestion: function () {
+      let self = this;
       this.$http.get('./api/question'
         + '?pageSize=' + this.pageSize
         + '&currentPage=' + this.currentPage
@@ -111,27 +181,31 @@ export default {
 
             暂时就不解决radio和checkbox了，textarea每个是分离的好使着，就保留着
             */
-            if (+item.type === 3) {
-              item.textarea = [];
+            if (+item.type === 1) {
+              item.radio = '';
+            } else if (+item.type === 2) {
+              item.checkbox = [];
+              // self.$set(self.exam, index, )
+              // self.exam[index].$add('checkbox', [])
+              // self.$set(self.exam[index], 'checkbox', []);
+            } else if (+item.type === 3) {
+              item.textarea = '';
             }
-            item.showContent = true;
             item.showAnswer = false;
             item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
             item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
-            this.$set(this.exam, index, item)
-            
+            // 上面的注释内容的原因找到了：vue中对数组使用的时候没有使用变异方法，导致vue不能监听到数组数据的变化 
+            self.$set(self.exam, index, item)
           });
-          // for (let i = 0, len = this.exam.length; i < len; i++) {
-          //   this.exam[i].radio = '';
-          // }
+
         }, response => {
       });
     },
     answerQuestion(row) {
       console.log(row, this);
-      row.radio = 3;
-      row.answer = [1];
-      row.showAnswer = true;
+      // row.radio = 3;
+      // row.answer = [1];
+      // row.showAnswer = true;
 
       let token = util.getUserInfoFromToken() || {};
       let params = {
@@ -172,12 +246,11 @@ export default {
       this.pageSize = val;
       this.getQuestion();
     },
-
-    clickTr: function (item, index, event) {
-      console.log(item, index, event);
-      
+    clickTr: function (row) {
+      debugger
+      console.log(row, item, index, event);
       item.showContent = !item.showContent;
-      this.$oset(this.exam, index, item)
+      this.$set(this.exam, index, item)
     }
   }
 }
@@ -186,79 +259,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   @import '../../../../static/assets/css/common.less';
-
-  @border-color: #DFE6EC;
-  @bg-gray: #FAFAFA;
-  @bg-deep-gray: #EEF1F6;
-  @bg-content-color: #FBFDFF;
-  .exam-table {
-    border: 1px solid @border-color;
-    th {
-      text-align: left;
-      padding: 10px 0;
-      background-color: @bg-deep-gray;
-    }
-    tr {
-      border-top: 1px solid @border-color;
-      height: 40px;
-      td {
-        div {
-          margin-right: 10px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-        }
-      }
-    }
-
-    &-head,
-    &-body {
-      font-size: 0;
-      span {
-        font-size: 16px;
-        line-height: 40px;
-        height: 40px;
-        vertical-align: top;
-        display: inline-block;
-        text-align: left;
-        background-color: @bg-deep-gray;
-        .text-ellipsis();
-      }
-      .th1 {
-        width: 55px;
-      }
-      .th2 {
-        width: 460px;
-      }
-      .th3,
-      .th6 {
-        width: 150px;
-      }
-      .th4 {
-        width: 180px;
-      }
-      .th5 {
-        width: 120px;
-      }
-    }
-    &-body {
-      border-top: 1px solid @border-color;
-      span {
-        font-size: 14px;
-        background-color: #fff;
-        padding-right: 10px;
-        box-sizing: border-box;
-        
-      }
-      &-content {
-        padding: 30px 30px 30px 55px;
-        font-size: 14px;
-      }
-    }
-  }
-
   .container {
     margin-top: 100px;
     overflow: hidden;
