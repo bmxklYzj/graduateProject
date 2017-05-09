@@ -5,6 +5,7 @@ let globalConfig = require('../../src/common/globalConfig');
 
 let Question = mongoose.model('Question', questionSchema);
 
+// 创建试题
 let createQuestion = function * (params) {
   let info = yield Question.create({
     createUserId: params.createUserId,
@@ -22,6 +23,7 @@ let createQuestion = function * (params) {
   return info;
 };
 
+// 获取全部试题
 let questionList = function * (params, renderAnswer) {
   let userId = params.userId;
   let options = {};
@@ -61,9 +63,17 @@ let countQuestion = function * (params) {
   return dbResult;
 };
 
+// 用户做某一个题接口: userID push进 question 的 userDone
+let userDoQuestion = function * (userId, questionId) {
+  let dbResult = yield Question.update({'_id': questionId},
+  {$addToSet: {'userDone': userId}});
+  return dbResult;
+};
+
 module.exports = {
   createQuestion,
   questionList,
   getQuestionById,
-  countQuestion
+  countQuestion,
+  userDoQuestion
 };

@@ -49,7 +49,7 @@ export default {
     'my-footer': Footer
   },
   created: function () {
-    this.getExam();
+    this.formatData();
     
   },
   methods: {

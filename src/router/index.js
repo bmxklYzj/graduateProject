@@ -57,7 +57,7 @@ export default new Router({
     },
     // 做题
     {
-      path: '/doexam',
+      path: '/doexam/*',
       name: 'DoExam',
       component: DoExam
     },

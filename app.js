@@ -49,7 +49,7 @@ app.on('error', function (err, ctx) {
 app.use(function * (next) {
   console.log('hello image');
   // ignore non-POSTs
-  if (!('POST' === this.method && this.path === '/auth/admin/imageUpload')) return yield next;
+  if (!('POST' === this.method && this.path === '/api/admin/imageUpload')) return yield next;
 
   // multipart upload
   var parts = parse(this);

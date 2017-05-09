@@ -20,11 +20,9 @@
             placeholder="请输入题目描述"
             v-model="description">
           </el-input>
-          <p>添加题目图片素材（可选）
-            <input type="file">
-          </p>
+          <p>添加题目图片素材（可选）</p>
           <el-upload
-            action="./auth/admin/imageUpload"
+            action="./api/admin/imageUpload"
             list-type="picture-card"
             :on-success="imageSuccess"
             :on-preview="handlePictureCardPreview"

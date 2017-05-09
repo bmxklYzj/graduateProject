@@ -4,27 +4,51 @@
 
     <div class="container">
       <header class="do-exam-head">
-        <p>当前第 <span class="current">{{currentIndex}}</span> 题，总共 10 题</p>
+        <p>当前第 <span class="current">{{currentIndex + 1}}</span> 题，总共 {{list.length}} 题</p>
         <el-progress :percentage="percentage" :stroke-width="15"></el-progress>      
       </header>
 
       <div class="question-item">
-        <p class="question-desc">{{currentIndex}}. 题目描述：{{list[currentIndex].title}}</p>
+        <p class="question-desc">{{currentIndex + 1}}. 题目描述：{{list[currentIndex].description}}</p>
+          <!--单选-->
+          <div class="radio" v-if="+list[currentIndex].type === 1">
+            <template v-for="(item, index) in list[currentIndex].option">
+              <!--这里使用:key="" 绑定一个唯一的id，能够保持住之前选择的题目，防止点击上一题下一题的时候状态丢失-->
+              <label :key="index + list[currentIndex]._id"><input type="radio" :name="list[currentIndex]._id + 'radiov'" :value="index"
+              v-model="list[currentIndex].radio">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.{{item}}</label>
+            </template>
+          </div>
           <!--多选-->
-          <el-checkbox-group v-model="checkList" v-if="+list[currentIndex].type === 2">
-            <!--<div v-for="(item, index) in props.row.options" class="question-desc-label">-->
-
-              <el-checkbox v-model="result[0].options" :label="index" v-for="(item, index) in list[currentIndex].options">
-                <span class="question-item-label-span">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.</span>
-                {{item}}
-              </el-checkbox>
-            <!--</div>-->
-          </el-checkbox-group>
+          <div class="check-box" v-if="+list[currentIndex].type === 2">
+            <template v-for="(item, index) in list[currentIndex].option">
+              <label><input type="checkbox" :name="list[currentIndex]._id + 'checkbox'" :value="index"
+              v-model="list[currentIndex].checkbox">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.  {{item}}</label>
+            </template>
+          </div>
+          <!--填空、问答-->
+          <el-input v-if="+list[currentIndex].type === 3"
+            type="textarea"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入您的答案"
+            v-model="list[currentIndex].textarea">
+          </el-input>
       </div>
       <el-button-group>
         <el-button @click="goPrev()" type="primary" icon="arrow-left">上一题</el-button>
-        <el-button @click="goNext()" type="primary">{{currentIndex === dataRec.totalCnt ? '提交试卷' : '下一题'}}<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+        <el-button @click="goNext()" type="primary">{{currentIndex === (list.length - 1) ? '提交试卷' : '下一题'}}<i class="el-icon-arrow-right el-icon--right"></i></el-button>
       </el-button-group>
+
+      <!--提交弹出框-->
+      <!--<el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        size="tiny">
+        <span>{{dialogTips}}</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">{{dialogCancelBtn}}</el-button>
+          <el-button type="primary" @click="confirmToSubmitExam()">{{dialogConfirmBtn}}</el-button>
+        </span>
+      </el-dialog>-->
     </div>
 
     <my-footer></my-footer>
@@ -35,16 +59,20 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
+let util = require('../../../common/util.js');
+
 export default {
   name: 'hello',
   data () {
     return {
-      currentIndex: 1, // 当前做题进度
-      percentage: 80, // 进度条
-      dataRec: '',
-      list: [],
-      checkList: [], // 多选的数组
-      result: [{id: 1, options: ['A', 'C']}] // 做题时选中的结果
+      examId: '',
+      currentIndex: 0, // 当前做题进度
+      percentage: 0, // 进度条
+      list: [{
+        'description': 'a'
+      }],
+      result: [{id: 1, option: ['A', 'C']}] // 做题时选中的结果
+
     }
   },
   components: {
@@ -53,20 +81,135 @@ export default {
   },
   created: function () {
     this.getExam();
+    this.calcPercentage();
+  },
+  watch: {
+    'currentIndex': function () {
+      this.calcPercentage();
+    },
+    'list': function () {
+      this.calcPercentage();
+    }
   },
   methods: {
+    calcPercentage(val) {
+      this.percentage = ~~(((this.currentIndex + 1) / this.list.length) * 100);
+    },
     getExam: function () {
-      this.$http.get('./api/doexam_list.ajax').then(response => {
-        this.dataRec = response.body.data || {};
-        this.list = this.dataRec.list || [];
+      this.examId = location.href.split('/doexam/')[1].split('/')[0];
+      this.$http.get('./api/doExamList'
+      + '?examId=' + this.examId
+      ).then(response => {
+        this.list = response.body.data || {};
+        this.list.forEach((item, index) => {
+          if (+item.type === 1) {
+            item.radio = '';
+          } else if (+item.type === 2) {
+            item.checkbox = [];
+          } else if (+item.type === 3) {
+            item.textarea = '';
+          }
+        });
         }, response => {
       });
     },
     goPrev: function () {
-      
+      if (this.currentIndex === 0) {
+        return;
+      }
+      this.currentIndex--;
+      console.log(this.list)
     },
     goNext: function () {
-      this.currentIndex++;
+      // 调起弹出框，让用户确认
+      var self = this;
+      if (this.currentIndex === this.list.length - 1) {
+        this.$confirm('确定要提交试卷？提价后不能再次修改请谨慎！', '提示', {
+          confirmButtonText: '确定提交',
+          cancelButtonText: '再检查一下',
+          type: 'warning'
+        }).then(() => {
+          debugger
+          self.confirmToSubmitExam();
+        }).catch(() => {
+        });
+      } else {
+        this.currentIndex++;
+      }
+      console.log(this.list)
+    },
+    confirmToSubmitExam () {
+      this.dialogVisible = false;
+      // 处理数据，提交试卷
+      // 检查每一个数据是否都做了
+      let haveError = []; // 保存没有做的题目的数组 
+      this.list.forEach((item, index) => {
+        if (+item.type === 1 && item.radio === ''
+         || +item.type === 2 && item.checkbox.length === 0
+         || +item.type === 3 && item.textarea === ''
+        ) {
+          haveError.push(index + 1);
+        }
+      });
+      if (haveError.length) {
+        let tip = '您的第 ' + haveError.join(',') + '题目没有作答，请答题后重新提交！';
+        this.$alert(tip, '提示', {
+          confirmButtonText: '知道啦',
+          callback: action => {
+          }
+        });
+      } else {
+        // 提交试卷接口
+        let token = util.getUserInfoFromToken() || {};
+        let params = {
+          userId: token.userId,
+          examId: this.examId,
+          items: []
+        };
+        // for (let i = 0, len = this.list.length; i < len; i++) {
+        //   let array = [];
+        //   let item = this.list[i];
+        //   if (+item.type === 1) {
+        //     array = [item.radio];
+        //   } else if (+item.type === 2) {
+        //     array = item.checkbox;
+        //   } else if (+item.type === 3) {
+        //     array = [item.textarea];
+        //   }
+        //   params.items.push({
+        //     'userId': token.userId,
+        //     'questionId': item._id,
+        //     'answer': array
+        //   })
+        // }
+        this.list.forEach(function (item, index) {
+          let array = [];
+          if (+item.type === 1) {
+            array = [item.radio];
+          } else if (+item.type === 2) {
+            array = item.checkbox;
+          } else if (+item.type === 3) {
+            array = [item.textarea];
+          }
+          params.items.push({
+            'userId': token.userId,
+            'questionId': item._id,
+            'type': +item.type,
+            'answer': array
+          })
+        });
+        this.$http.post('api/auth/doExamList', params).then(response => {
+          var data = response.body || {};
+          if (data.success) {
+            this.$message.success('提交成功！');
+            this.$router.push('/examdone' + '/' + this.examId);
+          } else {
+            this.$message.error('提交失败！');
+          }
+        }, response => {
+          this.$message.error('提交失败！');
+        });
+      }
     }
   }
 }
@@ -83,6 +226,9 @@ export default {
     .current {
       color: @blue;
     }
+    .el-progress-bar {
+      width: 50%;
+    }
   }
 
   .question-item {
@@ -92,22 +238,20 @@ export default {
       margin-bottom: 40px;
       margin-left: -30px;
     }
-    &-label-span {
-      margin:0 20px 0 10px;
-    }
-
-    .el-checkbox {
-      display: block;
-      margin: 15px 0;
-      white-space: normal;
-      line-height: 1.5;
-    }
-    .el-checkbox+.el-checkbox {
-      margin-left: 0;
+    .radio,
+    .check-box {
+      label {
+        display: block;
+        margin: 10px 0;
+      }
+      input {
+        margin-right: 20px;
+      }
     }
   }
 
   .el-button-group {
     float: right;
+    margin-top: 50px;
   }
 </style>

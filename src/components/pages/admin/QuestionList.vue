@@ -124,7 +124,9 @@ export default {
     getQuestionList: function () {
       let url = location.href;
       let examId =  location.href.split('/admin/questionlist/')[1].split('/')[0];
-      this.$http.get('./api/auth/examquestionlist/' + examId).then((response) => {
+      this.$http.get('./api/auth/examquestionlist'
+      + '?examId=' + examId
+      ).then((response) => {
         this.question = response.body.data;
         this.question.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')

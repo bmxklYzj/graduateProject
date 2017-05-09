@@ -48,9 +48,22 @@ let countExam = function * (params) {
   return dbResult;
 };
 
+// 用户做了某一个试卷，将questionId加入到exam表中的userDone字段中
+let userDoExam = function * (userId, examId) {
+  let dbResult = yield Exam.update({'_id': examId},
+    {
+      $addToSet: {
+        'userDone': userId
+      }
+    }
+  );
+  return dbResult;
+};
+
 module.exports = {
   createExam,
   examList,
   getExamById,
-  countExam
+  countExam,
+  userDoExam
 };

@@ -26,15 +26,17 @@
 
                 <!--单选-->
                 <div class="radio" v-if="+props.row.type === 1">
-                  <span v-for="(item, index) in props.row.option" :key="index">
-                    <label><input type="radio" :name="props.row._id + 'radiov'" :value="index" v-model="props.row.radio">{{item}}-{{index}}</label>
-                  </span>
+                  <template v-for="(item, index) in props.row.option">
+                    <label><input type="radio" :name="props.row._id + 'radiov'" :value="index"
+                    v-model="props.row.radio">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.{{item}}</label>
+                  </template>
                 </div>
                 <!--多选-->
                 <div class="check-box" v-if="+props.row.type === 2">
-                  <span v-for="(item, index) in props.row.option">
-                    <label><input type="checkbox" :name="props.row._id + 'checkbox'" :value="index" v-model="props.row.radio">{{item}}-{{index}}</label>
-                  </span>
+                  <template v-for="(item, index) in props.row.option">
+                    <label><input type="checkbox" :name="props.row._id + 'checkbox'" :value="index"
+                    v-model="props.row.checkbox">{{String.fromCharCode('A'.charCodeAt(0) + index)}}.{{item}}</label>
+                  </template>
                 </div>
                 <!--<el-radio-group v-model="props.row.radio" v-if="+props.row.type === 1">
                   <el-radio :label="index" v-for="(item, index) in props.row.option" :key="index">
@@ -57,11 +59,40 @@
                   placeholder="请输入您的答案"
                   v-model="props.row.textarea">
                 </el-input>
-                <el-button @click="answerQuestion(props.row)" type="primary" class="question-desc-btn">提交答案</el-button>
+                <el-button :disabled="props.row.showAnswer" @click="answerQuestion(props.$index)" type="primary" class="question-desc-btn">提交答案</el-button>
 
                 <!--答案-->
-                <div class="question-desc-answer" v-if="props.row.showAnswer">
-                  <p>答案：</p>
+                <div class="question-desc-answer" v-show="props.row.showAnswer">
+                  <p class="question-desc-answer-tips">
+                    <template v-if="!props.row.userHaveDone && +props.row.type !== 3">
+                      <el-alert
+                        v-if="+props.row.userAnswerStatus === 1"
+                        title="正确"
+                        type="success"
+                        show-icon>
+                      </el-alert>
+                      <el-alert
+                        v-else-if="+props.row.userAnswerStatus === 0"
+                        title="错误"
+                        type="error"
+                        show-icon>
+                      </el-alert>
+                      <el-alert
+                        v-else-if="+props.row.userAnswerStatus === 2"
+                        title="填空问答为主观题、判题机器人无法识别正误呢。"
+                        type="info"
+                        show-icon>
+                      </el-alert>
+                    </template>
+                    <el-alert
+                      v-if="props.row.userHaveDone"
+                      title="已经做过此题，仅可以查看答案，不能继续提交"
+                      type="info"
+                      show-icon>
+                    </el-alert>
+                    
+                  </p>
+                  <p>正确答案：</p>
                   <template v-if="+props.row.type !== 3">
                     <span v-for="(item, index) in props.row.answer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
                   </template>
@@ -180,6 +211,8 @@ export default {
             我觉得肯定是跟vue、element-ui的生命周期有关。坑了我三四个小时啊！
 
             暂时就不解决radio和checkbox了，textarea每个是分离的好使着，就保留着
+
+            2017-5-8 更：最后发现是el-radio在表格中不能更新！
             */
             if (+item.type === 1) {
               item.radio = '';
@@ -195,28 +228,32 @@ export default {
             item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
             item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
             // 上面的注释内容的原因找到了：vue中对数组使用的时候没有使用变异方法，导致vue不能监听到数组数据的变化 
-            self.$set(self.exam, index, item)
+            self.$set(self.exam, index, item);
           });
 
         }, response => {
       });
     },
-    answerQuestion(row) {
-      console.log(row, this);
+    answerQuestion(index) {
+      // console.log(props, row, this, this.checkbox);
       // row.radio = 3;
       // row.answer = [1];
-      // row.showAnswer = true;
-
+      this.$set(this.exam[index], 'showAnswer', true);
+      // this.exam[index].showAnswer = true;
+      console.log(this.exam[index]);
+      let row = this.exam[index];
+      
       let token = util.getUserInfoFromToken() || {};
       let params = {
         userId: token.userId,
         questionId: row._id,
+        type: +row.type
       };
       // 单选
       if (+row.type === 1) {
-        params.answer = [this.radio];
+        params.answer = [row.radio];
       } else if (+row.type === 2) {
-        params.answer = this.checkbox;
+        params.answer = row.checkbox;
       } else if (+row.type === 3) {
         params.answer = [row.textarea];
       }
@@ -225,7 +262,12 @@ export default {
         var data = response.body || {};
         if (data.success) {
           this.$message.success('提交成功！');
-          this.$router.push('/admin/question');
+          data.data = data.data || {};
+          this.$set(this.exam[index], 'answer', data.data.answer);
+          this.$set(this.exam[index], 'userAnswerStatus', data.data.userAnswerStatus);
+          if (data.info === '已经做过此题目！') {
+            this.$set(this.exam[index], 'userHaveDone', true);
+          }
         } else {
           this.$message.error('提交失败！');
         }
@@ -270,6 +312,16 @@ export default {
 
   .question-item {
     padding-left: 20px;
+    .radio,
+    .check-box {
+      label {
+        display: block;
+        margin: 10px 0;
+      }
+      input {
+        margin-right: 20px;
+      }
+    }
   }
 
   .question-desc {

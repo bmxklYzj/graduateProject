@@ -17,7 +17,8 @@ var UserSchema = new Schema({
   interest: {type: String}, // 兴趣
 
   // 数组类型
-  question: {type: Array}, // 该用户做过的试题 每一项的格式：{questionId: ObjectID, answer: [], result: Boolean}
+  // 注意：question中result为'0'为错误、'1'为正确、'2'为选择填空无法判断、需要人工来判断
+  question: {type: Array}, // 该用户做过的试题 每一项的格式：{questionId: ObjectID, answer: [], result: int}
   exam: {type: Array}, // 该用户做过的试卷
   comment: {type: Array}, // 该用户的评论
   like: {type: Array} // 试题的点赞
