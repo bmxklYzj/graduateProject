@@ -60,10 +60,21 @@ let userDoExam = function * (userId, examId) {
   return dbResult;
 };
 
+// 试题做完后，查看统计结果页面：根据userId查找exam表中的所有的question中的questionId
+let examGetQuestion = function * (examId) {
+  let dbResult = yield Exam.findOne({'_id': examId},
+    {
+      'question': 1
+    }
+  );
+  return dbResult ? dbResult.question : [];
+};
+
 module.exports = {
   createExam,
   examList,
   getExamById,
   countExam,
-  userDoExam
+  userDoExam,
+  examGetQuestion
 };

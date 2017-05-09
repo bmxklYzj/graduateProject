@@ -34,14 +34,19 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
+let util = require('../../../common/util.js');
+
 export default {
   name: 'hello',
   data () {
     return {
+      examId: '',
+      token: '',
       data: '',
       list: '',
       heat: '',
-      accuracy: ''
+      accuracy: '',
+      percentage: 0
     }
   },
   components: {
@@ -49,12 +54,18 @@ export default {
     'my-footer': Footer
   },
   created: function () {
-    this.formatData();
+    this.getExam();
     
   },
   methods: {
     getExam: function () {
-      this.$http.get('./api/exam_done.ajax').then(response => {
+      this.examId = location.href.split('/examdone/')[1].split('/')[0];
+      this.token = util.getUserInfoFromToken() || {};
+
+      this.$http.get('./api/auth/examDone'
+      + '?examId=' + this.examId
+      + '&userId=' + this.token.userId
+      ).then(response => {
         this.data = response.body.data || {};
         this.formatData();
         }, response => {

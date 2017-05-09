@@ -63,7 +63,7 @@ export default new Router({
     },
     // 做完后的统计页面
     {
-      path: '/examdone',
+      path: '/examdone/*',
       name: 'ExamDone',
       component: ExamDone
     },

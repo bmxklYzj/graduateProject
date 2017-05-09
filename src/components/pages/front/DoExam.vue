@@ -129,7 +129,6 @@ export default {
           cancelButtonText: '再检查一下',
           type: 'warning'
         }).then(() => {
-          debugger
           self.confirmToSubmitExam();
         }).catch(() => {
         });

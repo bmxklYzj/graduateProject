@@ -210,6 +210,27 @@ let doExamListPost = function * () {
   };
 };
 
+// 试题做完后，查看统计结果页面
+let examDone = function * () {
+  let examId = this.query.examId;
+  let userId = this.query.userId;
+  let questionArray = yield examModel.examGetQuestion(examId);
+  let sendResult = [];
+  for (let i = 0, len = questionArray.length; i < len; i++) {
+    let params = {
+      userId: userId,
+      questionId: questionArray[i]
+    };
+    let item = yield userModel.userHaveQuestionId(params);
+    sendResult.push(item);
+  }
+  this.body = {
+    success: true,
+    info: '操作成功！',
+    data: sendResult
+  };
+};
+
 module.exports = {
   createQuestion,
   questionList,
@@ -217,5 +238,6 @@ module.exports = {
   examList,
   examQuestionlist,
   userDoQuestion,
-  doExamListPost
+  doExamListPost,
+  examDone
 };

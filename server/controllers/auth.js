@@ -14,4 +14,6 @@ module.exports = (router) => {
   // doexam 页面获取exam 在noAuth中，get('/doExamList');
   // doexam 提交exam 在auth中，post('/doExamList')
   router.post('/doExamList', commonFunction.doExamListPost); // 做题返回该试题的全部question列表
+  // 试题做完后，查看统计结果页面
+  router.get('/examDone', commonFunction.examDone); // 做题返回该试题的全部question列表
 };
