@@ -8,6 +8,7 @@
         <el-table
           :data="exam"
           stripe
+          @row-click="goDoExam"
           style="width: 100%">
           <el-table-column
           prop="description"
@@ -91,6 +92,11 @@ export default {
     this.getExam();
   },
   methods: {
+    // 点击表格的一行跳转到做题页面去
+    goDoExam: function (row) {
+      this.$router.push('/doexam/' + row._id);
+    },  
+    // 获取试题列表
     getExam: function () {
       this.$http.get('./api/exam'
       + '?pageSize=' + this.pageSize
