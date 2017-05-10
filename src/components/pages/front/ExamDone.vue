@@ -24,6 +24,11 @@
           </span>
         </li>
       </ul>
+      <el-alert
+        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题。填空问答为主观题、判题机器人无法识别正误。正确率的统计只计算了单选、多选题型。'"
+        type="info"
+        show-icon>
+      </el-alert>
     </div>
 
     <my-footer></my-footer>
@@ -34,6 +39,7 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
+let moment = require('moment');
 let util = require('../../../common/util.js');
 
 export default {
@@ -44,9 +50,10 @@ export default {
       token: '',
       data: '',
       list: '',
-      heat: '',
-      accuracy: '',
-      percentage: 0
+      heat: 0,
+      accuracy: 0,
+      percentage: 0,
+      questionTypeThreeCnt: 10 // 是否有选择填空题
     }
   },
   components: {
@@ -73,14 +80,26 @@ export default {
     },
     formatData: function () {
       this.list = {
-        '发布者': this.data.createUser,
-        '发布时间': this.data.createTime,
+        '发布者': this.data.createUserName,
+        '试卷标题': this.data.description,
+        '发布时间': moment(this.data.createTime).format('YYYY-MM-DD HH:mm:ss'),
         '多少人已做过': this.data.finishedCnt,
-        '点赞数': this.data.likeCnt,
-        '评论数': this.data.commentCnt,
       };
       this.heat = +this.data.heat;
-      this.accuracy = +this.data.accuracy;
+      let questionList = this.data.list;
+      let rightCnt = 0;
+      let falseCnt = 0;
+      questionList.forEach(function(item, index) {
+        if (+item.result === 0) {
+          falseCnt++;
+        } else if (+item.result === 1) {
+          rightCnt++;
+        } else if (+itme.result === 2) {
+          this.questionTypeThreeCnt++;
+        }
+      }, this);
+      this.accuracy = ~~(rightCnt / (rightCnt + falseCnt) * 100);
+
     }
   }
 }

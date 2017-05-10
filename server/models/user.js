@@ -70,8 +70,11 @@ let userDoQuestion = function * (userId, questionId, answer, userAnswerStatus, u
   return dbResult;
 };
 
-// 用户做某一个题接口：辅助函数-判断某一个用户是否做个某个题，
-// 即查找user表中question是否含有某个questionId
+/**
+ * 用户做某一个题接口：辅助函数-判断某一个用户是否做个某个题，
+ * 即查找user表中question是否含有某个questionId
+ * @param {Object} params 参数：包含userId、questionId
+ */
 let userHaveQuestionId = function * (params) {
   let dbResult = yield User.findOne(
     {
@@ -94,7 +97,11 @@ let userHaveQuestionId = function * (params) {
   return dbResult;
 };
 
-// 用户做了某一个试卷，将examId加入到user表中的exam字段中
+/**
+ * 用户做了某一个试卷，将examId加入到user表中的exam字段中
+ * @param {String} userId 
+ * @param {String} examId 
+ */
 let userDoExam = function * (userId, examId) {
   let dbResult = yield User.update({'_id': userId},
     {

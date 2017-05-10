@@ -214,20 +214,33 @@ let doExamListPost = function * () {
 let examDone = function * () {
   let examId = this.query.examId;
   let userId = this.query.userId;
+  // 更加examId查到exam的信息
+  let examDB = yield examModel.getExamById(examId);
+  // 根据userId查找exam表中的所有的question中的questionId,返回qeustion数组
   let questionArray = yield examModel.examGetQuestion(examId);
-  let sendResult = [];
+  let list = [];
   for (let i = 0, len = questionArray.length; i < len; i++) {
     let params = {
       userId: userId,
       questionId: questionArray[i]
     };
+    // 查找user表中question的questionId并返回一个对象
     let item = yield userModel.userHaveQuestionId(params);
-    sendResult.push(item);
+    list.push(item);
   }
+
+  let result = {
+    'createUserName': examDB.createUserName,
+    'description': examDB.description,
+    'createTime': examDB.createTime,
+    'finishedCnt': examDB.userDone.length,
+    'heat': 0,
+    list: list
+  };
   this.body = {
     success: true,
     info: '操作成功！',
-    data: sendResult
+    data: result
   };
 };
 
