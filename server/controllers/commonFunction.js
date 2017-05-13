@@ -151,7 +151,6 @@ let userDoQuestion = function * () {
   // 更新user表:这里不更新，只是push，因为前面发现如果做过就直接返回了
   yield userModel.userDoQuestion(postBody.userId, postBody.questionId, postBody.answer, userAnswerStatus);
 
-
   console.log(qResult, questionResult);
   if (questionResult) {
     this.body = {
@@ -228,8 +227,11 @@ let examDone = function * () {
     let item = yield userModel.userHaveQuestionId(params);
     list.push(item);
   }
+  // 查看user表中exam对应的examId的teacherReviewed的状态
+  let teacherReviewedDB = yield userModel.userHaveExamId(this.query);
 
   let result = {
+    'teacherReviewed': teacherReviewedDB ? teacherReviewedDB.teacherReviewed : '',
     'createUserName': examDB.createUserName,
     'description': examDB.description,
     'createTime': examDB.createTime,
@@ -244,6 +246,63 @@ let examDone = function * () {
   };
 };
 
+// 用户活动页面：获取做过的试卷
+let userExamList = function * () {
+  let userId = this.query.userId;
+  let limit = +this.query.limit || 6;
+  // 根据userId查找user表中exam的所有examId
+  let examArray = yield userModel.getAllExam(userId, limit);
+
+  let list = [];
+  for (let i = 0, len = examArray.length; i < len; i++) {
+    let exam = yield examModel.getExamById(examArray[i].examId);
+    exam = exam.toJSON();
+    exam.finishedCnt = exam.userDone.length;
+    exam.heat = ~~(Math.random() * 100);
+    list.push(exam);
+  }
+
+  this.body = {
+    success: true,
+    info: '操作成功！',
+    data: list
+  };
+};
+
+// 用户活动页面：获取做过的试题
+let userQuestionList = function * () {
+  let userId = this.query.userId;
+  let limit = +this.query.limit || 6;
+  // 根据userId查找user表中exam的所有examId
+  let questionArray = yield userModel.getAllQuestion(userId, limit);
+
+  let list = [];
+  for (let i = 0, len = questionArray.length; i < len; i++) {
+    let exam = yield questionModel.getQuestionById(questionArray[i].questionId, true);
+    exam = exam.toJSON();
+    exam.finishedCnt = exam.userDone.length;
+    exam.heat = ~~(Math.random() * 100);
+    list.push(exam);
+  }
+
+  this.body = {
+    success: true,
+    info: '操作成功！',
+    data: list
+  };
+};
+
+// 用户活动页面：获取做过的试题
+let profile = function * () {
+  let userId = this.query.userId;
+  let userDB = yield userModel.getUserByIdExcludedPassword(userId);
+  this.body = {
+    success: true,
+    info: '操作成功！',
+    data: userDB
+  };
+};
+
 module.exports = {
   createQuestion,
   questionList,
@@ -252,5 +311,8 @@ module.exports = {
   examQuestionlist,
   userDoQuestion,
   doExamListPost,
-  examDone
+  examDone,
+  userExamList,
+  userQuestionList,
+  profile
 };

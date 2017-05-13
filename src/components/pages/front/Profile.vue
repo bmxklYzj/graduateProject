@@ -25,10 +25,13 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
+let util = require('../../../common/util.js');
+
 export default {
   name: 'hello',
   data () {
     return {
+      token: '',
       data: '',
       list: '',
     }
@@ -38,12 +41,15 @@ export default {
     'my-footer': Footer
   },
   created: function () {
+    this.token = util.getUserInfoFromToken() || {};
     this.getExam();
     
   },
   methods: {
     getExam: function () {
-      this.$http.get('./api/exam_done.ajax').then(response => {
+      this.$http.get('./api/auth/profile'
+        + '?userId=' + this.token.userId
+      ).then(response => {
         this.data = response.body.data || {};
         this.formatData();
         }, response => {
@@ -51,11 +57,14 @@ export default {
     },
     formatData: function () {
       this.list = {
-        '昵称': this.data.createUser,
-        '性别': this.data.createTime,
-        '学校': this.data.finishedCnt,
-        '年龄': this.data.likeCnt,
-        '学院': this.data.commentCnt,
+        '用户名': this.data.userName,
+        '性别': this.data.sex,
+        '年龄': this.data.age,
+        '学校': this.data.school,
+        '学号': this.data.studentId,
+        '班号': this.data.classId,
+        '个人简介': this.data.introduce,
+        '感兴趣的科目': this.data.interest
       };
     }
   }

@@ -5,8 +5,16 @@ var User = mongoose.model('User', UserSchema);
 
 let getUserById = function * (id) {
   let userInfo = yield User.findOne({
-    'userId': id
+    '_id': id
   });
+  return userInfo;
+};
+
+// 返回用户信息，除了密码
+let getUserByIdExcludedPassword = function * (userId) {
+  let userInfo = yield User.findOne({
+    '_id': userId
+  }, {'password': 0});
   return userInfo;
 };
 
@@ -102,22 +110,86 @@ let userHaveQuestionId = function * (params) {
  * @param {String} userId 
  * @param {String} examId 
  */
-let userDoExam = function * (userId, examId) {
-  let dbResult = yield User.update({'_id': userId},
-    {
-      $addToSet: {
-        'exam': examId
+let userDoExam = function * (userId, examId, teacherReviewed, update) {
+  teacherReviewed = teacherReviewed ? true : false;
+  update = update ? true : false;
+  let dbResult;
+  // 默认是直接push，如果update参数为true，就更新
+  if (update) {
+    dbResult = yield User.update(
+      {
+        '_id': userId,
+        'exam.examId': examId
+      },
+      {
+        $set: {
+          'exam.$.teacherReviewed': teacherReviewed
+        }
       }
+    );
+  } else {
+    dbResult = yield User.update(
+      {
+        '_id': userId
+      },
+      {
+        $addToSet: {
+          'exam': {
+            examId: examId,
+            teacherReviewed: teacherReviewed
+          }
+        }
+      }
+    );
+  }
+  return dbResult;
+};
+let userHaveExamId = function * (params) {
+  let dbResult = yield User.findOne(
+    {
+      '_id': params.userId,
+      'exam.examId': params.examId
+    },
+    {
+      'exam.$': 1
     }
   );
+  if (dbResult) {
+    dbResult = dbResult.exam[0];
+  }
   return dbResult;
 };
 
+/**
+ * 根据userId查找user表中exam的所有examId
+ * @param {String} userId userId
+ * @param {String} limit limit
+ */
+let getAllExam = function * (userId, limit) {
+  let dbResult = yield User.findOne({'_id': userId}, {'exam.examId': 1}).limit(limit);
+  return dbResult ? dbResult.exam : [];
+};
+
+/**
+ * 根据userId查找user表中question的所有questionId
+ * @param {String} userId userId
+ * @param {String} limit limit
+ */
+let getAllQuestion = function * (userId, limit) {
+  let dbResult = yield User.findOne({'_id': userId}, {'question.questionId': 1}).limit(limit);
+  return dbResult ? dbResult.question : [];
+};
+
+
 module.exports = {
   getUserById,
+  getUserByIdExcludedPassword,
   getUserByName,
   UserRegister,
   userDoQuestion,
   userHaveQuestionId,
-  userDoExam
+  userDoExam,
+  userHaveExamId,
+  getAllExam,
+  getAllQuestion
 };

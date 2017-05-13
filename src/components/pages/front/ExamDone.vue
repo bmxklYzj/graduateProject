@@ -24,8 +24,16 @@
           </span>
         </li>
       </ul>
+
       <el-alert
-        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题。填空问答为主观题、判题机器人无法识别正误。正确率的统计只计算了单选、多选题型。'"
+        v-if="teacherReviewed"
+        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题，并且老师已批阅此类主观题。正确率的统计计算了单选、多选题型、填空问答的全部提醒'"
+        type="info"
+        show-icon>
+      </el-alert>
+      <el-alert
+        v-else
+        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题，老师还没有批阅此类主观题！填空问答为主观题、判题机器人无法识别正误。正确率的统计只计算了单选、多选题型。'"
         type="info"
         show-icon>
       </el-alert>
@@ -53,7 +61,8 @@ export default {
       heat: 0,
       accuracy: 0,
       percentage: 0,
-      questionTypeThreeCnt: 10 // 是否有选择填空题
+      questionTypeThreeCnt: 0, // 是否有选择填空题
+      teacherReviewed: false,
     }
   },
   components: {
@@ -83,7 +92,7 @@ export default {
         '发布者': this.data.createUserName,
         '试卷标题': this.data.description,
         '发布时间': moment(this.data.createTime).format('YYYY-MM-DD HH:mm:ss'),
-        '多少人已做过': this.data.finishedCnt,
+        '多少人已做过': this.data.finishedCnt
       };
       this.heat = +this.data.heat;
       let questionList = this.data.list;
@@ -98,6 +107,11 @@ export default {
           this.questionTypeThreeCnt++;
         }
       }, this);
+      if (+this.questionTypeThreeCnt === 0) {
+        this.teacherReviewed = true;
+      } else {
+        this.teacherReviewed = this.data.teacherReviewed;
+      }
       this.accuracy = ~~(rightCnt / (rightCnt + falseCnt) * 100);
 
     }

@@ -3,7 +3,7 @@
     <div class="head">{{title}}</div>
     <ul>
       <li v-for="(item, index) in list">
-        <span class="title">{{item.title}}</span>
+        <span class="title">{{item.description}}</span>
         <span class="heat">热度：{{item.heat}}</span>
         <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
       </li>
@@ -12,6 +12,9 @@
 </template>
 
 <script>
+let util = require('../common/util.js');
+let globalConfig = require('../common/globalConfig.js')
+
 
 export default {
   name: 'hello',
@@ -27,6 +30,7 @@ export default {
   },
   data () {
     return {
+      token: '',
       list: []
     }
   },
@@ -37,11 +41,21 @@ export default {
     // 'component-gap': componentGap
   },
   created: function () {
+    this.token = util.getUserInfoFromToken() || {};
     this.getList();
   },
   methods: {
     getList: function () {
-      this.$http.get('./api/index_list.ajax').then(response => {
+      let hrefName = '';
+      if (this.title === '做过的试卷') {
+        hrefName = 'userExamList';
+      } else if (this.title === '做过的试题') {
+        hrefName = 'userQuestionList';
+      }
+      this.$http.get('./api/auth/' + hrefName
+        + '?userId=' + this.token.userId
+        + '&limit=' + globalConfig.indexListCnt
+      ).then(response => {
         this.list = response.body.data;
         // this.swipeArray = response.body.data;
         }, response => {

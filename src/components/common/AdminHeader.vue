@@ -4,6 +4,7 @@
     <el-menu-item index="1">后台管理</el-menu-item>
     <el-menu-item index="2"><a href="#/admin">试卷</a></el-menu-item>
     <el-menu-item index="3"><a href="#/admin/question">试题</a></el-menu-item>
+    <el-menu-item index="4"><a href="#/admin/review">未批阅试卷</a></el-menu-item>
 
     <el-menu-item index="4" class="right-menu"><a>退出</a></el-menu-item>
      

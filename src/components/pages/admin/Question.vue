@@ -107,6 +107,12 @@
           :autosize="{ minRows: 2, maxRows: 6}"
           v-model="ruleForm.examDescription"></el-input>
         </el-form-item>
+        <el-form-item label="试卷要求" prop="examRequirement">
+          <el-input
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 6}"
+          v-model="ruleForm.examRequirement"></el-input>
+        </el-form-item>
       </el-form>
 
       <el-button @click="createExam('ruleForm')" class="admin-exam-create-exam" type="primary">将选中的试题创建新的试卷</el-button>
@@ -145,11 +151,16 @@ export default {
       checkList: [], // 多选的数组
 
       ruleForm: {
-        examDescription: '' // 创建试卷时的描述
+        examDescription: '', // 创建试卷时的描述
+        examRequirement: '' // 创建试卷时的教师要求
       },
       rules: {
         examDescription: [
           { required: true, message: '请输入试卷标题', trigger: 'blur' },
+          { min: 3, max: 500, message: '长度在 3 到 500 个字符', trigger: 'blur' }
+        ],
+        examRequirement: [
+          { required: true, message: '请输入试卷要求', trigger: 'blur' },
           { min: 3, max: 500, message: '长度在 3 到 500 个字符', trigger: 'blur' }
         ]
       }
@@ -205,6 +216,7 @@ export default {
             createUserId: this.token.userId,
             createUserName: this.token.userName,
             description: this.ruleForm.examDescription,
+            examRequirement: this.ruleForm.examexamRequirement,
             question: this.multipleSelection
           };
           this.$http.post('./api/auth/exam', params).then((response) => {

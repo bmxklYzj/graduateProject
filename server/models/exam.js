@@ -10,6 +10,7 @@ let createExam = function * (params) {
     createUserId: params.createUserId,
     createUserName: params.createUserName,
     description: params.description,
+    requirement: params.requirement,
     createTime: params.createTime,
     updateTime: params.updateTime,
     question: params.question

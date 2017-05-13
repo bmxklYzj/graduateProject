@@ -6,9 +6,9 @@
       <activity-list title="做过的试卷" href="exam"></activity-list>
       <activity-list title="做过的试题" href="exam"></activity-list>
 
-      <activity-list title="我的评论" href="exam"></activity-list>
+      <!--<activity-list title="我的评论" href="exam"></activity-list>
       <activity-list title="我送出的赞" href="exam"></activity-list>
-      <activity-list title="我收到的赞" href="exam"></activity-list>
+      <activity-list title="我收到的赞" href="exam"></activity-list>-->
       
       
     </div>
