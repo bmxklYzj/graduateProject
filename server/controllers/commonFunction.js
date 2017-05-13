@@ -244,6 +244,42 @@ let examDone = function * () {
     info: '操作成功！',
     data: result
   };
+
+  // 计算正确率，存入user表exam字段的score中
+  let rightCnt = 0;
+  let falseCnt = 0;
+  list.forEach((item, index) => {
+    if (+item.result === 0) {
+      falseCnt++;
+    } else if (+item.result === 1) {
+      rightCnt++;
+    }
+  });
+  let score = ~~(rightCnt / (rightCnt + falseCnt) * 100);
+  yield userModel.examDoneUpdateScore(
+    {
+      'userId': userId,
+      'examId': examId,
+      'score': score
+    }
+  );
+};
+
+// 试题做完后，查看统计结果页面-学生提交对试卷的评论
+let examDoneStudentComment = function * () {
+  let postBody = this.request.body;
+  let examDB = yield userModel.examDoneStudentComment(postBody);
+  if (examDB) {
+    this.body = {
+      success: true,
+      info: '操作成功！'
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
 };
 
 // 用户活动页面：获取做过的试卷
@@ -255,8 +291,16 @@ let userExamList = function * () {
 
   let list = [];
   for (let i = 0, len = examArray.length; i < len; i++) {
+    // 根据examId获取试卷信息
     let exam = yield examModel.getExamById(examArray[i].examId);
     exam = exam.toJSON();
+
+    // 将 用户的答题信息加入进来
+    exam.score = examArray[i].score;
+    exam.teacherReviewed = examArray[i].teacherReviewed;
+    exam.studentComment = examArray[i].studentComment;
+    exam.teacherComment = examArray[i].teacherComment;
+
     exam.finishedCnt = exam.userDone.length;
     exam.heat = ~~(Math.random() * 100);
     list.push(exam);
@@ -312,6 +356,7 @@ module.exports = {
   userDoQuestion,
   doExamListPost,
   examDone,
+  examDoneStudentComment,
   userExamList,
   userQuestionList,
   profile

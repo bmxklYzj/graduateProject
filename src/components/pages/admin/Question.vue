@@ -216,7 +216,7 @@ export default {
             createUserId: this.token.userId,
             createUserName: this.token.userName,
             description: this.ruleForm.examDescription,
-            examRequirement: this.ruleForm.examexamRequirement,
+            requirement: this.ruleForm.examRequirement,
             question: this.multipleSelection
           };
           this.$http.post('./api/auth/exam', params).then((response) => {

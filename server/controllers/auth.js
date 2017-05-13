@@ -16,6 +16,8 @@ module.exports = (router) => {
   router.post('/doExamList', commonFunction.doExamListPost); // 做题返回该试题的全部question列表
   // 试题做完后，查看统计结果页面
   router.get('/examDone', commonFunction.examDone); // 做题返回该试题的全部question列表
+  // 试题做完后，查看统计结果页面-学生提交对试卷的评论
+  router.post('/examDoneStudentComment', commonFunction.examDoneStudentComment); // 做题返回该试题的全部question列表
 
   // 用户活动页面：获取做过的试题、试卷
   router.get('/userExamList', commonFunction.userExamList); // 做题返回该试题的全部question列表
@@ -23,4 +25,6 @@ module.exports = (router) => {
 
   // 用户个人信息页面：获取个人信息，除了密码
   router.get('/profile', commonFunction.profile); // 做题返回该试题的全部question列表
+
+
 };

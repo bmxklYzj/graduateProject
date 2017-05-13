@@ -160,13 +160,52 @@ let userHaveExamId = function * (params) {
   return dbResult;
 };
 
+
+// 试题做完后，查看统计结果页面-学生提交对试卷的评论
+let examDoneStudentComment = function * (params) {
+  let userId = params.userId || '';
+  let examId = params.examId || '';
+  let studentComment = params.studentComment || '';
+  let dbResult = yield User.update(
+    {
+      '_id': userId,
+      'exam.examId': examId
+    },
+    {
+      $set: {
+        'exam.$.studentComment': studentComment
+      }
+    }
+  );
+  return dbResult;
+};
+
+// 试题做完后，查看统计结果页面-更新用户试题正确率，存入user表exam字段的score中
+let examDoneUpdateScore = function * (params) {
+  let userId = params.userId || '';
+  let examId = params.examId || '';
+  let score = params.score || '';
+  let dbResult = yield User.update(
+    {
+      '_id': userId,
+      'exam.examId': examId
+    },
+    {
+      $set: {
+        'exam.$.score': score
+      }
+    }
+  );
+  return dbResult;
+};
+
 /**
  * 根据userId查找user表中exam的所有examId
  * @param {String} userId userId
  * @param {String} limit limit
  */
 let getAllExam = function * (userId, limit) {
-  let dbResult = yield User.findOne({'_id': userId}, {'exam.examId': 1}).limit(limit);
+  let dbResult = yield User.findOne({'_id': userId}, {'exam': 1}).limit(limit);
   return dbResult ? dbResult.exam : [];
 };
 
@@ -191,5 +230,7 @@ module.exports = {
   userDoExam,
   userHaveExamId,
   getAllExam,
-  getAllQuestion
+  getAllQuestion,
+  examDoneStudentComment,
+  examDoneUpdateScore,
 };

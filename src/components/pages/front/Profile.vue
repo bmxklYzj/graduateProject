@@ -15,6 +15,10 @@
     </div>
 
       <el-button class="button cf" type="primary">更新个人信息</el-button>
+
+      <activity-list title="做过的试卷" href="exam"></activity-list>
+      <activity-list title="做过的试题" href="exam"></activity-list>
+
     </div>
 
     <my-footer></my-footer>
@@ -24,6 +28,7 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
+import ActivityList from '../../ActivityList.vue'
 
 let util = require('../../../common/util.js');
 
@@ -38,7 +43,8 @@ export default {
   },
   components: {
     'my-header': Header,
-    'my-footer': Footer
+    'my-footer': Footer,
+    'activity-list': ActivityList
   },
   created: function () {
     this.token = util.getUserInfoFromToken() || {};

@@ -77,5 +77,5 @@ module.exports = {
   getExamById,
   countExam,
   userDoExam,
-  examGetQuestion
+  examGetQuestion 
 };

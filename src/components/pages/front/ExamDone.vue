@@ -37,7 +37,17 @@
         type="info"
         show-icon>
       </el-alert>
+
+        <el-input
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 4}"
+          placeholder="您可以输入对试题的评价或想对老师说的话，教师在后台可以看到"
+          v-model="studentComment">
+        </el-input>
+        <el-button type="primary" @click="submitStudentComment()">提交评论</el-button>
+
     </div>
+
 
     <my-footer></my-footer>
   </div>
@@ -56,6 +66,7 @@ export default {
     return {
       examId: '',
       token: '',
+      studentComment: '',
       data: '',
       list: '',
       heat: 0,
@@ -103,7 +114,7 @@ export default {
           falseCnt++;
         } else if (+item.result === 1) {
           rightCnt++;
-        } else if (+itme.result === 2) {
+        } else if (+item.result === 2) {
           this.questionTypeThreeCnt++;
         }
       }, this);
@@ -114,6 +125,24 @@ export default {
       }
       this.accuracy = ~~(rightCnt / (rightCnt + falseCnt) * 100);
 
+    },
+    submitStudentComment: function () {
+      let params = {
+        studentComment: this.studentComment,
+        'examId': this.examId,
+        'userId': this.token.userId
+      }
+      this.$http.post('./api/auth/examDoneStudentComment', params).then((response) => {
+        var data = response.body || {};
+        if (data.success) {
+          this.$message.success('提交成功！');
+          this.$router.push('/admin/exam');
+        } else {
+          this.$message.error('提交失败！');
+        }
+      }, response => {
+        this.$message.error('提交失败！');
+      });
     }
   }
 }
@@ -147,6 +176,9 @@ export default {
           padding-left: 20px;
         }
       }
+    }
+    .el-textarea {
+      margin: 50px 0 20px;
     }
   }
   

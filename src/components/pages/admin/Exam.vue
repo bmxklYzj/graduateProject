@@ -107,7 +107,7 @@ export default {
       });
     },
     newExam: function () {
-      location.hash = '#auth/question';
+      this.$router.push('/admin/question');
     },
     goQuestionList: function (row, event, column) {
       this.$router.push('/admin/questionlist/' + row._id);
