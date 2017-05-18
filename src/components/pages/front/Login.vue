@@ -58,6 +58,7 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 import LoginIntroduce from '../../common/LoginIntroduce.vue'
+import md5 from 'md5'
 
 let util = require('../../../common/util.js');
 
@@ -105,7 +106,7 @@ export default {
     login: function () {
       var params = {
         userName: this.form.userName,
-        password: this.form.password
+        password: md5(this.form.password)
       };
       this.$http.post('doAuth/userLogin', params).then(response => {
         var data = response.body || {};

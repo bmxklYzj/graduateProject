@@ -89,6 +89,9 @@
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 import LoginIntroduce from '../../common/LoginIntroduce.vue'
+import md5 from 'md5'
+
+let util = require('../../../common/util.js');
 
 export default {
   name: 'hello',
@@ -162,7 +165,7 @@ export default {
     register: function () {
       var params = {
         userName: this.form.userName,
-        password: this.form.password,
+        password: md5(this.form.password),
         age: this.form.age,
         sex: this.form.sex,
         school: this.form.school,

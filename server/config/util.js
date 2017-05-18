@@ -6,9 +6,10 @@ module.exports = {
     // 定义payload内容
     let userToken = {
       exp: Math.floor(Date.now() / 1000) + (60 * 60), // 设置一小时过期时间
-      userName: user.userName,
-      userId: user._id,
-      userRole: user.role
+      userName: user.userName
+      // ,
+      // userId: user._id,
+      // userRole: user.role
     };
     let secret = 'token'; // 指定密钥
     return jwt.sign(userToken, secret) || '';
