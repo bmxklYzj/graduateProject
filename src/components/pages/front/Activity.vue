@@ -9,8 +9,8 @@
       <!--<activity-list title="我的评论" href="exam"></activity-list>
       <activity-list title="我送出的赞" href="exam"></activity-list>
       <activity-list title="我收到的赞" href="exam"></activity-list>-->
-      
-      
+
+
     </div>
 
     <my-footer></my-footer>
@@ -20,13 +20,13 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
-import ActivityList from '../../ActivityList.vue'
+import ActivityList from '../../common/ActivityList.vue'
 
 export default {
   name: 'hello',
   data () {
     return {
-      
+
     }
   },
   components: {
@@ -37,7 +37,7 @@ export default {
   created: function () {
   },
   methods: {
-    
+
   }
 }
 </script>
@@ -48,5 +48,5 @@ export default {
   .container {
     overflow: hidden;
   }
-  
+
 </style>

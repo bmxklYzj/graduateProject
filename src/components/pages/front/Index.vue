@@ -25,7 +25,7 @@
 
 <script>
 import Header from '../../common/Header.vue'
-import IndexList from '../../IndexList.vue'
+import IndexList from '../../common/IndexList.vue'
 import Footer from '../../common/Footer.vue'
 export default {
   name: 'hello',

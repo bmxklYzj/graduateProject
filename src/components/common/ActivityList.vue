@@ -22,7 +22,7 @@
         </ul>
       </template>
     </ul>
-    
+
     <div class="exam-analysis" v-if="title === '做过的试卷'">
       <h3>试卷总统计</h3>
       <p>做过的试卷总数：{{examAnalysis.totalExam}}</p>
@@ -34,8 +34,8 @@
 </template>
 
 <script>
-let util = require('../common/util.js');
-let globalConfig = require('../common/globalConfig.js')
+let util = require('../../common/util.js');
+let globalConfig = require('../../common/globalConfig.js')
 
 export default {
   name: 'hello',
@@ -75,7 +75,7 @@ export default {
         + '&limit=' + globalConfig.indexListCnt
       ).then(response => {
         this.list = response.body.data;
-        
+
         // 试卷统计对象
         let scoreArray = [];
         this.list.forEach(function(item, index) {
@@ -96,7 +96,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  @import '../../static/assets/css/common.less';
+  @import '../../../static/assets/css/common.less';
   @height: 50px;
 
   .list {

@@ -88,7 +88,7 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
-import LoginIntroduce from '../../LoginIntroduce.vue'
+import LoginIntroduce from '../../common/LoginIntroduce.vue'
 
 export default {
   name: 'hello',
@@ -177,6 +177,7 @@ export default {
         if (data.success) {
           this.$message.success('注册成功！');
           sessionStorage.setItem('token', data.token);
+          util.user = Object.assign({}, data.user);
           this.$router.push('/');
         } else {
           this.$message.error('注册失败！');
@@ -212,7 +213,7 @@ export default {
       margin-right: 10%;
       margin-left: 5%;
       float: left;
-      
+
       .el-form-item__label {
         color: #fff;
       }

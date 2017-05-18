@@ -63,7 +63,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  @import '../../static/assets/css/common.less';
+  @import '../../../static/assets/css/common.less';
   @itemGap: 200px;
 
   .img-wrap {

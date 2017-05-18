@@ -13,7 +13,7 @@
 </template>
 
 <script>
-let globalConfig = require('../../src/common/globalConfig.js');
+let globalConfig = require('../../common/globalConfig.js');
 
 export default {
   name: 'hello',
@@ -34,7 +34,7 @@ export default {
       // 分页
       pageSize: globalConfig.indexListCnt,
       currentPage: 1
-      
+
     }
   },
   components: {
@@ -64,7 +64,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  @import '../../static/assets/css/common.less';
+  @import '../../../static/assets/css/common.less';
   @height: 50px;
 
   .list {

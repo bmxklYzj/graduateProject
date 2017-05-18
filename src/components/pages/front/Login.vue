@@ -57,7 +57,9 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
-import LoginIntroduce from '../../LoginIntroduce.vue'
+import LoginIntroduce from '../../common/LoginIntroduce.vue'
+
+let util = require('../../../common/util.js');
 
 export default {
   name: 'hello',
@@ -110,6 +112,7 @@ export default {
         if (data.success) {
           this.$message.success('登录成功！');
           sessionStorage.setItem('token', data.token);
+          util.user = Object.assign({}, data.user);
           this.$router.push('/');
         } else {
           this.$message.error(data.info || '登录失败！');

@@ -1,6 +1,6 @@
 const modelUser = require('../models/user.js');
 const jwt = require('koa-jwt');
-const util = require('../../src/common/util');
+const util = require('../config/util.js');
 
 const getUserInfo = function* () {
   const id = this.params.id; // 获取url里传过来的参数里的id
@@ -16,7 +16,12 @@ let UserRegister = function * () {
     const token = util.generateToken(result); // 签发token
     this.body = {
       success: true,
-      token: token // 返回token
+      token: token, // 返回token
+      user: {
+        userName: result.userName,
+        userRole: result.role,
+        userId: result._id
+      }
     };
   } else {
     this.body = {
@@ -41,7 +46,12 @@ let userLogin = function * () {
       const token = util.generateToken(result); // 签发token
       this.body = {
         success: true,
-        token: token // 返回token
+        token: token, // 返回token
+        user: {
+          userName: result.userName,
+          userRole: result.role,
+          userId: result._id
+        }
       };
     }
   } else {
