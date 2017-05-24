@@ -20,11 +20,11 @@ let createQuestion = function * () {
   }
 };
 
-// question 获取题目列表: 
+// question 获取题目列表:
 // query: userId, pageSize, currentPage
 let questionList = function * () {
-  let token = this.request.header.authorization.split('Bearer ')[1];
-  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
+  let token = this.request.header.authorization ? this.request.header.authorization.split('Bearer ')[1] : false;
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;
   let dbResult = yield questionModel.questionList(this.query, renderAnswer, token
   );
   let count = yield questionModel.countQuestion(this.query);
@@ -95,7 +95,7 @@ let examList = function * () {
 // get 参数：examId
 let examQuestionlist = function * () {
   let token = this.request.header.authorization.split('Bearer ')[1];
-  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;
   var examId = this.query.examId;
   let dbResult = yield examModel.getExamById(examId);
   let questionResult = [];
@@ -173,7 +173,7 @@ let doExamListPost = function * () {
   let postBody = this.request.body || {};
 
   // 用户提交试卷，需要做三件事：
-  // 1. 用户做了某一个试卷，将examId加入到user表中的userDone字段中
+  // 1. 用户做了某一个试卷，将examId加入到user表中的 exam 字段中
   yield userModel.userDoExam(postBody.userId, postBody.examId);
   // 2. 用户做了某一个试卷，将questionId加入到exam表中的userDone字段中
   yield examModel.userDoExam(postBody.userId, postBody.examId);

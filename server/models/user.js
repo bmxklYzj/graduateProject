@@ -106,7 +106,7 @@ let userHaveQuestionId = function * (params) {
 };
 
 /**
- * 用户做了某一个试卷，将examId加入到user表中的exam字段中
+ * 用户做了某一个试卷，将examId加入到user表中的 exam 字段中
  * @param {String} userId 
  * @param {String} examId 
  */
