@@ -119,6 +119,32 @@ let examQuestionlist = function * () {
   }
 };
 
+/**
+ * admin端-未批阅试卷
+ * get参数 userId, pageSize, currentPage
+ * 这里应该是查找所有学生做了该老师发布的所有试卷，这里简化，直接搜出
+ * 所有没有批阅的试卷
+ */
+let markList = function * () {
+  let dbResult = yield userModel.markListGetAllExam(this.query);
+  let result = [];
+  for (let i = 0, len = dbResult.length; i < len; i++) {
+    let examDB = yield examModel.getExamById(dbResult[i].exam[0].examId);
+    let obj = examDB.toJSON();
+    obj.userName = dbResult[i].userName;
+    obj.userId = dbResult[i]._id;
+    result.push(obj);
+  }
+
+  this.body = {
+    success: true,
+    data: {
+      list: result
+    }
+  };
+};
+
+
 // 用户做某一个题接口
 // request.body 三个参数：userId, questionId, answer
 let userDoQuestion = function * () {
@@ -353,6 +379,7 @@ module.exports = {
   createExam,
   examList,
   examQuestionlist,
+  markList,
   userDoQuestion,
   doExamListPost,
   examDone,

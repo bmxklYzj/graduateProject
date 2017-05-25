@@ -17,6 +17,8 @@ import AdminExam from '@/components/pages/admin/Exam';
 import AdminQuestion from '@/components/pages/admin/Question';
 import NewQuestion from '@/components/pages/admin/NewQuestion';
 import QuestionList from '@/components/pages/admin/QuestionList';
+import MarkList from '@/components/pages/admin/MarkList';
+import MarkDetail from '@/components/pages/admin/MarkDetail';
 
 // common: 没有权限
 import DontHaveAuth from '@/components/pages/common/DontHaveAuth';
@@ -109,6 +111,18 @@ export default new Router({
       path: '/admin/questionlist/*',
       name: 'QuestionList',
       component: QuestionList
+    },
+    // admin-未批阅试卷列表
+    {
+      path: '/admin/marklist',
+      name: 'MarkList',
+      component: MarkList
+    },
+    // admin-未批阅试卷 详情页面
+    {
+      path: '/admin/markdetail/*',
+      name: 'MarkDetail',
+      component: MarkDetail
     },
 
 
