@@ -29,18 +29,18 @@
                 </el-dialog>
 
                 <!--单选1、多选2：展示选项-->
-                <div class="question-desc-option-wrap" v-if="+props.row.type !== 3">
+                <!--<div class="question-desc-option-wrap" v-if="+props.row.type !== 3">
                   <div class="question-desc-option"  v-for="(item, index) in props.row.option">
                     <span class="question-desc-label-span">
                       {{String.fromCharCode('A'.charCodeAt(0) + index)}}.
                     </span>
                     {{item}}
                   </div>
-                </div>
+                </div>-->
 
                 <!--答案-->
                 <div class="question-desc-answer">
-                  <p>答案：</p>
+                  <p>标准答案：</p>
                   <template v-if="+props.row.type !== 3">
                     <span v-for="(item, index) in props.row.answer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
                   </template>
@@ -48,7 +48,21 @@
                     <span v-for="(item, index) in props.row.answer">{{item}}</span>
                   </template>
                 </div>
-                
+                <div class="question-desc-answer">
+                  <p>学生答案：</p>
+                  <template v-if="+props.row.type !== 3">
+                    <span v-for="(item, index) in props.row.userAnswer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
+                  </template>
+                  <template v-else>
+                    <span v-for="(item, index) in props.row.userAnswer">{{item}}</span>
+                  </template>
+                </div>
+                <div class="true-or-false">
+                   <label><input type="radio" :name="props.row._id + 'radio'" :value="true"
+                    v-model="props.row.userAnswerIsRight">正确</label>
+                    <label><input type="radio" :name="props.row._id + 'radio'" :value="true"
+                    v-model="props.row.userAnswerIsRight">错误</label>
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -86,7 +100,13 @@
         </el-table>
       </template>
 
-      
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 4, maxRows: 10}"
+        placeholder="请输入对学生的寄语、评价"
+        v-model="teacherComment">
+      </el-input>
+      <el-button type="primary" size="big" class="submit-button" @click="">提交</el-button>
     </div>
 
     <my-footer></my-footer>
@@ -104,6 +124,7 @@ export default {
   name: 'hello',
   data () {
     return {
+      teacherComment: '',
       userId: '',
       examId: '',
       // 图片模态框
@@ -124,18 +145,21 @@ export default {
   },
   methods: {
     getQuestionList: function () {
+      let self = this;
       let url = location.href;
       this.userId = url.split('userId=')[1].split('&')[0];
       this.examId = url.split('examId=')[1].split('&')[0];
-      this.$http.get('./api/auth/markdetail'
+      this.$http.get('/api/auth/markdetail'
       + '?userId=' + this.userId
       + '&examId=' + this.examId
       ).then((response) => {
-        this.question = response.body.data;
+        this.question = response.body.data.list;
         this.question.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
           item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
-        })
+          item.userAnswerIsRight = true;
+        });
+        self.$set(self.question, index, item);
       }, response => {
       });
     },
@@ -199,6 +223,7 @@ export default {
         border: 2px solid @blue;
         height: 100px;
         margin-right: 30px;
+        max-width: 100%;
       }
     }
     &-answer {
@@ -232,5 +257,15 @@ export default {
   .question-new-exam {
     margin-top: 60px;
     width: @width;
+  }
+  
+  .true-or-false {
+    margin-top: 20px;
+  }
+  .el-textarea {
+    margin: 30px 0 20px;
+  }
+  .submit-button {
+    width: 200px;
   }
 </style>

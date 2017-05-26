@@ -19,6 +19,7 @@ import NewQuestion from '@/components/pages/admin/NewQuestion';
 import QuestionList from '@/components/pages/admin/QuestionList';
 import MarkList from '@/components/pages/admin/MarkList';
 import MarkDetail from '@/components/pages/admin/MarkDetail';
+import Class from '@/components/pages/admin/Class';
 
 // common: 没有权限
 import DontHaveAuth from '@/components/pages/common/DontHaveAuth';
@@ -123,6 +124,12 @@ export default new Router({
       path: '/admin/markdetail/*',
       name: 'MarkDetail',
       component: MarkDetail
+    },
+    // admin-班级列表
+    {
+      path: '/admin/class',
+      name: 'Class',
+      component: Class
     },
 
 

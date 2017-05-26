@@ -162,9 +162,18 @@ let markdetail = function * () {
     let userQuestionDB = yield userModel.markDetailGetQuestionById(userId, questionId);
     let questionInfo = yield questionModel.getQuestionById(questionId, true);
     let obj = questionInfo.toJSON();
+    if (+obj.type !== 3) {
+      continue;
+    }
     obj.userAnswer = userQuestionDB.answer;
     result.push(obj);
   }
+  this.body = {
+    success: true,
+    data: {
+      list: result
+    }
+  };
 };
 
 
