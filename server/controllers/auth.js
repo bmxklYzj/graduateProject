@@ -8,7 +8,9 @@ module.exports = (router) => {
   router.get('/exam', commonFunction.examList); // 获取试卷列表
   router.get('/examquestionlist', commonFunction.examQuestionlist); // 点击某一个试卷 进入到试题列表，纯展示
   // marklist admin端-未批阅列表
-  router.get('/marklist', commonFunction.markList); // 点击某一个试卷 进入到试题列表，纯展示
+  router.get('/marklist', commonFunction.markList);
+  // marklist admin端-未批阅 详细情况
+  router.get('/markdetail', commonFunction.markdetail);
 
   // 用户前端
   router.post('/userDoQuestion', commonFunction.userDoQuestion); // 用户做某一个题接口
@@ -27,6 +29,4 @@ module.exports = (router) => {
 
   // 用户个人信息页面：获取个人信息，除了密码
   router.get('/profile', commonFunction.profile); // 做题返回该试题的全部question列表
-
-
 };

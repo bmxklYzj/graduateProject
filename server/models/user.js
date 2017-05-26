@@ -220,14 +220,24 @@ let getAllQuestion = function * (userId, limit) {
 };
 
 /**
- * admin端-markList 未批阅试卷
+ * admin端-markList 未批阅试卷 列表
  */
 let markListGetAllExam = function * () {
   let dbResult = yield User.find(
-    {'exam.teacherReviewed': false},
-    {'exam.$': 1, 'userName': 1, '_id': 1}
+    {'exam.teacherReviewed': false}
+    // ,{'exam.$': 1, 'userName': 1, '_id': 1}
   );
   return dbResult || [];
+};
+
+/**
+ * admin端-markdetail 未批阅试卷 详情页
+ */
+let markDetailGetQuestionById = function * (userId, questionId) {
+  let dbResult = yield User.findOne(
+    {'_id': userId, 'question.questionId': questionId}, {'question.$': 1}
+  );
+  return dbResult.question[0] || [];
 };
 
 module.exports = {
@@ -243,5 +253,6 @@ module.exports = {
   getAllQuestion,
   examDoneStudentComment,
   examDoneUpdateScore,
-  markListGetAllExam
+  markListGetAllExam,
+  markDetailGetQuestionById
 };

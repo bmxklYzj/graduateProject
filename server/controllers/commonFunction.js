@@ -120,7 +120,7 @@ let examQuestionlist = function * () {
 };
 
 /**
- * admin端-未批阅试卷
+ * admin端-未批阅试卷 列表
  * get参数 userId, pageSize, currentPage
  * 这里应该是查找所有学生做了该老师发布的所有试卷，这里简化，直接搜出
  * 所有没有批阅的试卷
@@ -129,19 +129,42 @@ let markList = function * () {
   let dbResult = yield userModel.markListGetAllExam(this.query);
   let result = [];
   for (let i = 0, len = dbResult.length; i < len; i++) {
-    let examDB = yield examModel.getExamById(dbResult[i].exam[0].examId);
-    let obj = examDB.toJSON();
-    obj.userName = dbResult[i].userName;
-    obj.userId = dbResult[i]._id;
-    result.push(obj);
+    for (let j = 0, len = dbResult.length; j < len; j++) {
+      if (dbResult[i].exam[j].teacherReviewed) {
+        continue;
+      }
+      let examDB = yield examModel.getExamById(dbResult[i].exam[j].examId);
+      let obj = examDB.toJSON();
+      obj.userName = dbResult[i].userName;
+      obj.userId = dbResult[i]._id;
+      result.push(obj);
+    }
   }
-
   this.body = {
     success: true,
     data: {
       list: result
     }
   };
+};
+
+/**
+ * admin端-未批阅试卷 详情页面
+ * 请求参数examId, userId
+ */
+let markdetail = function * () {
+  var userId = this.query.userId;
+  var examId = this.query.examId;
+  let result = [];
+  let questionsInExam = yield examModel.examGetQuestion(examId);
+  for (let i = 0, len = questionsInExam.length; i < len; i++) {
+    let questionId = questionsInExam[i];
+    let userQuestionDB = yield userModel.markDetailGetQuestionById(userId, questionId);
+    let questionInfo = yield questionModel.getQuestionById(questionId, true);
+    let obj = questionInfo.toJSON();
+    obj.userAnswer = userQuestionDB.answer;
+    result.push(obj);
+  }
 };
 
 
@@ -380,6 +403,7 @@ module.exports = {
   examList,
   examQuestionlist,
   markList,
+  markdetail,
   userDoQuestion,
   doExamListPost,
   examDone,

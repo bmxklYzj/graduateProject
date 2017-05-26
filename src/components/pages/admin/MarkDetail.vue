@@ -104,6 +104,8 @@ export default {
   name: 'hello',
   data () {
     return {
+      userId: '',
+      examId: '',
       // 图片模态框
       dialogVisible: false,
       dialogImageUrl: '',
@@ -123,11 +125,11 @@ export default {
   methods: {
     getQuestionList: function () {
       let url = location.href;
-      let userId = url.split('userId=')[1].split('&')[0];
-      let examId = url.split('examId=')[1].split('&')[0];
+      this.userId = url.split('userId=')[1].split('&')[0];
+      this.examId = url.split('examId=')[1].split('&')[0];
       this.$http.get('./api/auth/markdetail'
-      + '?userId=' + userId
-      + '&examId=' + examId
+      + '?userId=' + this.userId
+      + '&examId=' + this.examId
       ).then((response) => {
         this.question = response.body.data;
         this.question.forEach((item) => {

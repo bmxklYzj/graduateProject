@@ -106,7 +106,7 @@ export default {
       });
     },
     goQuestionList: function (row, event, column) {
-      this.$router.push('/admin/questionlist/'
+      this.$router.push('/admin/markdetail/'
       + '?userId=' + row.userId
       + '&examId=' + row._id
       );
