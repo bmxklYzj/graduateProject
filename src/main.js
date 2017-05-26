@@ -34,7 +34,9 @@ router.beforeEach((to, from, next) => {
     }
     // next('/login');
   } else {
-    if (to.path === '/login' || to.path === '/register') {
+    if (to.path === '/' || to.path.startsWith('/exam') || to.path.startsWith('/question')) {
+      next();
+    } else if (to.path === '/login' || to.path === '/register') {
       next();
     } else {
       next('/login');

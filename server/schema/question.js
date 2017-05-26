@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var questionSchema = new Schema({
   createUserId: {type: Schema.Types.ObjectId}, // 创建用户id
-  createUserName: {type: String}, // 创建用户名：仅仅是冗余，如果不要userName，需要跨表通过userId来查询userName
+  createUserName: {type: String}, // 创建用户名：仅仅是冗余，如果没有userName，需要跨表来查询user通过userId来查询userName
   createTime: {type: Date, default: Date.now}, // 创建时间
   updateTime: {type: Date, default: Date.now}, // 更新时间
   type: {type: String}, // 试题的类型：单选：1；多选：2；填空/问答：3
@@ -14,7 +14,6 @@ var questionSchema = new Schema({
 
   // 用户数据
   userDone: {type: Array}, // 哪些人做了此试题
-  comment: {type: Array}, // 试题下面的评论
   like: {type: Array} // 试题的点赞
 });
 

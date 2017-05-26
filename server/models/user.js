@@ -106,7 +106,7 @@ let userHaveQuestionId = function * (params) {
 };
 
 /**
- * 用户做了某一个试卷，将examId加入到user表中的exam字段中
+ * 用户做了某一个试卷，将examId加入到user表中的 exam 字段中
  * @param {String} userId 
  * @param {String} examId 
  */
@@ -219,6 +219,26 @@ let getAllQuestion = function * (userId, limit) {
   return dbResult ? dbResult.question : [];
 };
 
+/**
+ * admin端-markList 未批阅试卷 列表
+ */
+let markListGetAllExam = function * () {
+  let dbResult = yield User.find(
+    {'exam.teacherReviewed': false}
+    // ,{'exam.$': 1, 'userName': 1, '_id': 1}
+  );
+  return dbResult || [];
+};
+
+/**
+ * admin端-markdetail 未批阅试卷 详情页
+ */
+let markDetailGetQuestionById = function * (userId, questionId) {
+  let dbResult = yield User.findOne(
+    {'_id': userId, 'question.questionId': questionId}, {'question.$': 1}
+  );
+  return dbResult.question[0] || [];
+};
 
 module.exports = {
   getUserById,
@@ -233,4 +253,6 @@ module.exports = {
   getAllQuestion,
   examDoneStudentComment,
   examDoneUpdateScore,
+  markListGetAllExam,
+  markDetailGetQuestionById
 };

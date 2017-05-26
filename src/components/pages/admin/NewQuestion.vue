@@ -1,7 +1,6 @@
 <template>
   <div class="new-question">
     <my-header></my-header>
-
     <div class="container">
       <section>
         <p class="title">1. 请选择题目类型：</p>
@@ -129,6 +128,16 @@ export default {
         answer: this.answer,
         image: this.image
       };
+      if (!this.description) {
+        this.$message.error('必须填写试题描述');
+        return;
+      } else if ((!this.option) && (+this.type === 1 || +this.type === 2)) {
+        this.$message.error('必须填写试题选项');
+        return;
+      } else if (!this.answer.length) {
+        this.$message.error('必须填写试题答案');
+        return;
+      }
       this.$http.post('api/auth/question', params).then(response => {
         var data = response.body || {};
         if (data.success) {

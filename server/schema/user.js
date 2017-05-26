@@ -20,9 +20,8 @@ var UserSchema = new Schema({
   // 注意：question中result为'0'为错误、'1'为正确、'2'为选择填空无法判断、需要人工来判断
   question: {type: Array}, // 该用户做过的试题 每一项的格式：{questionId: ObjectID, answer: [], result: int}
   exam: {type: Array}, // 该用户做过的试卷，
-  // 每一项的格式：{questionId: ObjectID, score: String(两位的整数), teacherReviewed: false, studentComment: String, teacherComment: String}
+  // 每一项的格式：{examId: ObjectID, score: String(两位的整数), teacherReviewed: false, studentComment: String, teacherComment: String}
 
-  comment: {type: Array}, // 该用户的评论
   like: {type: Array} // 试题的点赞
 });
 

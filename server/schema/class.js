@@ -8,8 +8,6 @@ var ClassSchema = new Schema({
   createime: {type: Date, default: Date.now}, // 班级的创建时间
   exam: {type: Array}, // 该班级报包含的试题Id,每一项的格式：{examId: ObjectID, startTime: Date, expireTime: Date}
   student: {type: Array} // 该班级报包含的学生Id
-
-
 });
 
 module.exports = ClassSchema;

@@ -1,23 +1,17 @@
 let jwt = require('jsonwebtoken');
 
 module.exports = {
-  // 创建token
-  generateToken: function (user) {
-    let userToken = {
-      userName: user.userName,
-      userId: user._id,
-      userRole: user.role
-    };
-    let secret = 'token'; // 指定密钥
-    return jwt.sign(userToken, secret) || '';
+  user: {
+    userName: '',
+    userRole: '',
+    userId: ''
   },
-  // 解析token
+  // register或者login之后将用户信息放到配置文件中，命名错误，但是很多地方用到了这个名字，就没有修改了
   getUserInfoFromToken: function () {
-    let token = sessionStorage.getItem('token');
+    let token = sessionStorage.getItem('token') || null;
     if (token) {
-      let decode = jwt.verify(token, 'token');
-      return decode || {};
+      return JSON.parse(decodeURIComponent(escape(atob(token.split('.')[1]))));
     }
-    return {};
+    return this.user;
   }
 };

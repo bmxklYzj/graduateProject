@@ -28,7 +28,7 @@
 <script>
 import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
-import ActivityList from '../../ActivityList.vue'
+import ActivityList from '../../common/ActivityList.vue'
 
 let util = require('../../../common/util.js');
 
@@ -49,7 +49,7 @@ export default {
   created: function () {
     this.token = util.getUserInfoFromToken() || {};
     this.getExam();
-    
+
   },
   methods: {
     getExam: function () {
@@ -119,5 +119,5 @@ export default {
       margin-top: 40px;
     }
   }
-  
+
 </style>

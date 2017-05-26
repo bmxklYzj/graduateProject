@@ -4,9 +4,10 @@
     <el-menu-item index="1">后台管理</el-menu-item>
     <el-menu-item index="2"><a href="#/admin">试卷</a></el-menu-item>
     <el-menu-item index="3"><a href="#/admin/question">试题</a></el-menu-item>
-    <el-menu-item index="4"><a href="#/admin/review">未批阅试卷</a></el-menu-item>
+    <el-menu-item index="4"><a href="#/admin/marklist">未批阅试卷</a></el-menu-item>
+    <el-menu-item index="5"><a href="#/admin/class">班级</a></el-menu-item>
 
-    <el-menu-item index="4" class="right-menu"><a>退出</a></el-menu-item>
+    <el-menu-item index="6" class="right-menu"><a>退出</a></el-menu-item>
      
   </el-menu>
 </div>
@@ -18,7 +19,7 @@ export default {
   name: 'hello',
   data () {
     return {
-      activeIndex: '2'
+      activeIndex: '1'
     }
   },
   components: {
@@ -30,7 +31,7 @@ export default {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
       this.activeIndex = key;
-      if (+key === 4) {
+      if (+key === 6) {
         sessionStorage.removeItem('token');
         this.$router.push('/');
       }

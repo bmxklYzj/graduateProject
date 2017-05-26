@@ -20,11 +20,11 @@ let createQuestion = function * () {
   }
 };
 
-// question 获取题目列表: 
+// question 获取题目列表:
 // query: userId, pageSize, currentPage
 let questionList = function * () {
-  let token = this.request.header.authorization.split('Bearer ')[1];
-  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
+  let token = this.request.header.authorization ? this.request.header.authorization.split('Bearer ')[1] : false;
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;
   let dbResult = yield questionModel.questionList(this.query, renderAnswer, token
   );
   let count = yield questionModel.countQuestion(this.query);
@@ -95,7 +95,7 @@ let examList = function * () {
 // get 参数：examId
 let examQuestionlist = function * () {
   let token = this.request.header.authorization.split('Bearer ')[1];
-  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;  
+  let renderAnswer = this.request.url.indexOf('api/auth/') === -1 ? false : true;
   var examId = this.query.examId;
   let dbResult = yield examModel.getExamById(examId);
   let questionResult = [];
@@ -118,6 +118,64 @@ let examQuestionlist = function * () {
     };
   }
 };
+
+/**
+ * admin端-未批阅试卷 列表
+ * get参数 userId, pageSize, currentPage
+ * 这里应该是查找所有学生做了该老师发布的所有试卷，这里简化，直接搜出
+ * 所有没有批阅的试卷
+ */
+let markList = function * () {
+  let dbResult = yield userModel.markListGetAllExam(this.query);
+  let result = [];
+  for (let i = 0, len = dbResult.length; i < len; i++) {
+    for (let j = 0, len = dbResult.length; j < len; j++) {
+      if (dbResult[i].exam[j].teacherReviewed) {
+        continue;
+      }
+      let examDB = yield examModel.getExamById(dbResult[i].exam[j].examId);
+      let obj = examDB.toJSON();
+      obj.userName = dbResult[i].userName;
+      obj.userId = dbResult[i]._id;
+      result.push(obj);
+    }
+  }
+  this.body = {
+    success: true,
+    data: {
+      list: result
+    }
+  };
+};
+
+/**
+ * admin端-未批阅试卷 详情页面
+ * 请求参数examId, userId
+ */
+let markdetail = function * () {
+  var userId = this.query.userId;
+  var examId = this.query.examId;
+  let result = [];
+  let questionsInExam = yield examModel.examGetQuestion(examId);
+  for (let i = 0, len = questionsInExam.length; i < len; i++) {
+    let questionId = questionsInExam[i];
+    let userQuestionDB = yield userModel.markDetailGetQuestionById(userId, questionId);
+    let questionInfo = yield questionModel.getQuestionById(questionId, true);
+    let obj = questionInfo.toJSON();
+    if (+obj.type !== 3) {
+      continue;
+    }
+    obj.userAnswer = userQuestionDB.answer;
+    result.push(obj);
+  }
+  this.body = {
+    success: true,
+    data: {
+      list: result
+    }
+  };
+};
+
 
 // 用户做某一个题接口
 // request.body 三个参数：userId, questionId, answer
@@ -173,7 +231,7 @@ let doExamListPost = function * () {
   let postBody = this.request.body || {};
 
   // 用户提交试卷，需要做三件事：
-  // 1. 用户做了某一个试卷，将examId加入到user表中的userDone字段中
+  // 1. 用户做了某一个试卷，将examId加入到user表中的 exam 字段中
   yield userModel.userDoExam(postBody.userId, postBody.examId);
   // 2. 用户做了某一个试卷，将questionId加入到exam表中的userDone字段中
   yield examModel.userDoExam(postBody.userId, postBody.examId);
@@ -353,6 +411,8 @@ module.exports = {
   createExam,
   examList,
   examQuestionlist,
+  markList,
+  markdetail,
   userDoQuestion,
   doExamListPost,
   examDone,

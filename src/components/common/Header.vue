@@ -8,12 +8,13 @@
       <input type="text" placeholder="搜索">
       <i class="el-icon-search"></i>
     </div>
-    <el-submenu index="3">
+    <el-submenu index="3" v-if="userName">
       <template slot="title">个人中心({{userName}})</template>
       <el-menu-item index="3-1"><a href="#activity" >学习活动</a></el-menu-item>
       <el-menu-item index="3-2"><a href="#profile">个人信息</a></el-menu-item>
       <el-menu-item index="3-3"><a href="#profile">退出</a></el-menu-item>
     </el-submenu>
+    <el-menu-item index="3" class="fr" v-else><a href="#login">登录</a></el-menu-item>
   </el-menu>
 </div>
 </template>
@@ -119,7 +120,8 @@ export default {
     }
   }
 
-  .el-submenu {
+  .el-submenu,
+  .fr {
     float: right;
   }
 </style>
