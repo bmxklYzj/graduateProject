@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
   // userId为默认的_id
   userName: {type: String}, // 用户名
-  role: {type: String, default: '1'}, // 账号角色：1普通注册用户，2管理员可以发布试题，3超级管理员
+  role: {type: String, default: '1'}, // 账号角色：1普通注册用户，2管理员可以发布试题，3超级管理员, 0为禁用账号
   wantToBeAdmin: {type: Boolean, default: false}, // 标志普通用户是否想成为管理员
   password: {type: String}, // 密码
   age: {type: String}, // 年龄

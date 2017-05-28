@@ -86,9 +86,15 @@
           :width="150"
           :show-overflow-tooltip="true">
             <template scope="scope">
-              <i class="el-icon-edit" @click="editItem(_id)"></i>
-              <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
-              <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
+              <el-tooltip content="编辑">
+                <i class="el-icon-edit" @click="editItem(_id)"></i>
+              </el-tooltip>
+              <el-tooltip content="删除">
+                <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
+              </el-tooltip>
+              <el-tooltip content="查看试题统计">
+                <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -306,8 +312,8 @@ export default {
         });          
       });
     },
-    showStatics: function () {
-
+  showStatics: function (questionId) {
+      this.$router.push('/admin/questionstatistic?questionId=' + questionId);
     }
   }
 }

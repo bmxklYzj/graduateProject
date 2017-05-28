@@ -4,8 +4,13 @@ module.exports = (router) => {
   // admin端
   router.post('/question', commonFunction.createQuestion); // 创建试题
   router.get('/question', commonFunction.questionList); // 获取试题列表
+  // 查看试题统计
+  router.get('/questionStatistic', commonFunction.questionStatistic); // 获取试题列表
   router.post('/exam', commonFunction.createExam); // 创建试卷
   router.get('/exam', commonFunction.examList); // 获取试卷列表
+  // 查看试卷统计
+  router.get('/examStatistic', commonFunction.examStatistic); // 获取试卷列表
+  
   // 删除某一个试卷
   router.delete('/exam', commonFunction.deleteExam); // 点击某一个试卷 进入到试题列表，纯展示
   router.get('/examquestionlist', commonFunction.examQuestionlist); // 点击某一个试卷 进入到试题列表，纯展示
@@ -36,4 +41,8 @@ module.exports = (router) => {
 
   // 用户个人信息页面：获取个人信息，除了密码
   router.get('/profile', commonFunction.profile); // 做题返回该试题的全部question列表
+
+
+  // admin端 - 超级管理员 获取全部用户
+  router.get('/manageUser', commonFunction.manageUser);
 };

@@ -270,6 +270,39 @@ let examHasBeenDone = function * (examId) {
   return Boolean(count);
 };
 
+/**
+ * admin端 - 超级管理员 获取全部用户
+ */
+let getAllUserList = function * () {
+  // 排除role为3的超级管理员
+  let dbResult = User.find({'role': /[^3]/});
+  return dbResult;
+};
+
+/**
+ * 根据试卷id 得到所有用户已经做过的成绩score
+ * @param {String} examId 试卷id
+ */
+let getAllScoreByExamId = function * (examId) {
+  let dbResult = yield User.find(
+    {'exam.examId': examId},
+    {'exam.$.score': 1}
+  );
+  return dbResult;
+};
+
+/**
+ * 根据试题id 得到所有用户已经做过的成绩score
+ * @param {String} questionId 试题id
+ */
+let getAllScoreByQuestionId = function * (questionId) {
+  let dbResult = yield User.find(
+    {'question.questionId': questionId},
+    {'question.$.result': 1}
+  );
+  return dbResult;
+};
+
 module.exports = {
   getUserById,
   getUserByIdExcludedPassword,
@@ -286,5 +319,8 @@ module.exports = {
   userUpdateQuestionResult,
   markListGetAllExam,
   markDetailGetQuestionById,
-  examHasBeenDone
+  examHasBeenDone,
+  getAllUserList,
+  getAllScoreByExamId,
+  getAllScoreByQuestionId
 };

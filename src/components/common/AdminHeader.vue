@@ -6,6 +6,7 @@
     <el-menu-item index="3"><a href="#/admin/question">试题</a></el-menu-item>
     <el-menu-item index="4"><a href="#/admin/marklist">未批阅试卷</a></el-menu-item>
     <el-menu-item index="5"><a href="#/admin/class">班级</a></el-menu-item>
+    <el-menu-item index="7" v-if="+token.userRole === 3"><a href="#/admin/manageuser">超级管理员管理用户</a></el-menu-item>
 
     <el-menu-item index="6" class="right-menu"><a>退出</a></el-menu-item>
      
@@ -14,18 +15,21 @@
 </template>
 
 <script>
+let util = require('../../common/util.js');
 
 export default {
   name: 'hello',
   data () {
     return {
-      activeIndex: '1'
+      activeIndex: '1',
+      token: ''
     }
   },
   components: {
 
   },
   created: function () {
+      this.token = util.getUserInfoFromToken() || {};
   },
   methods: {
     handleSelect(key, keyPath) {

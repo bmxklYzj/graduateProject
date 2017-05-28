@@ -13,5 +13,12 @@ module.exports = {
       return JSON.parse(decodeURIComponent(escape(atob(token.split('.')[1]))));
     }
     return this.user;
+  },
+
+  userRole: {
+    '0': '已注销的账号',
+    '1': '学生',
+    '2': '教师',
+    '3': '超级管理员'
   }
 };

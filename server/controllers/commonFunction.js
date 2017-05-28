@@ -49,6 +49,39 @@ let questionList = function * () {
   }
 };
 
+/**
+ * 试题统计 - 试题列表 跳转而来
+ * 参数 questionId
+ */
+let questionStatistic = function * () {
+  let questionId = this.query.questionId;
+  let questionDB = yield userModel.getAllScoreByQuestionId(questionId);
+  // 对试题进行统计
+  let rightCnt = 0;
+  let falseCnt = 0;
+  let unknownCnt = 0;
+  for (let i = 0, len = questionDB.length; i < len; i++) {
+    let score = questionDB[i].question[0].result;
+    if (+score === 0) {
+      falseCnt++;
+    } else if (+score === 1) {
+      rightCnt++;
+    } else if (+score === 2) {
+      unknownCnt++;
+    }
+  }
+  let data = {
+    finishedCnt: questionDB.length,
+    rightCnt: rightCnt,
+    falseCnt: falseCnt,
+    unknownCnt: unknownCnt
+  };
+  this.body = {
+    success: true,
+    data: data
+  };
+};
+
 // exam 创建试卷
 let createExam = function * () {
   let postBody = this.request.body;
@@ -90,6 +123,34 @@ let examList = function * () {
     };
   }
 };
+
+/**
+ * 试卷统计 - 试卷列表 跳转而来
+ * 参数 examId
+ */
+let examStatistic = function * () {
+  let examId = this.query.examId;
+  let examDB = yield userModel.getAllScoreByExamId(examId);
+  // 对试卷成绩进行计算
+  let scoreArray = [];
+  let totalScore = 0;
+  for (let i = 0, len = examDB.length; i < len; i++) {
+    let score = examDB[i].exam[0].score;
+    totalScore += score;
+    scoreArray.push(score);
+  }
+  let data = {
+    finishedCnt: scoreArray.length,
+    maxScore: Math.max.apply(Math, scoreArray) || 0,
+    minScore: Math.min.apply(Math, scoreArray) || 0,
+    averageScore: ~~(totalScore / scoreArray.length)
+  };
+  this.body = {
+    success: true,
+    data: data
+  };
+};
+
 
 /**
  * admin端-试卷列表删除试卷
@@ -510,11 +571,25 @@ let profile = function * () {
   };
 };
 
+// admin端 - 超级管理员 获取全部用户
+let manageUser = function * () {
+  let userDB = yield userModel.getAllUserList();
+  this.body = {
+    success: true,
+    info: '操作成功！',
+    data: {
+      list: userDB
+    }
+  };
+};
+
 module.exports = {
   createQuestion,
   questionList,
+  questionStatistic,
   createExam,
   examList,
+  examStatistic,
   deleteExam,
   deleteQuestion,
   examQuestionlist,
@@ -527,5 +602,6 @@ module.exports = {
   examDoneStudentComment,
   userExamList,
   userQuestionList,
-  profile
+  profile,
+  manageUser
 };

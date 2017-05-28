@@ -10,7 +10,7 @@
       <!--列表-->
       
       <ul class="cf">
-          <li v-for="(item, index) in list">
+          <li v-for="(item, index) in list" @click="goClassInfo()">
             <div class="wrap">
                 <p class="wrap-name">{{item.name}}</p>
                 <div class="wrap-footer">
@@ -94,7 +94,9 @@ export default {
     
   },
   methods: {
-
+    goClassInfo: function () {
+      this.$router.push('/admin/classinfo');
+    },
     newClass: function () {
       this.$router.push('/admin/question');
     },

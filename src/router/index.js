@@ -14,12 +14,16 @@ import Profile from '@/components/pages/front/Profile';
 
 // admin
 import AdminExam from '@/components/pages/admin/Exam';
+import AdminExamStatistic from '@/components/pages/admin/ExamStatistic';
 import AdminQuestion from '@/components/pages/admin/Question';
+import AdminQuestionStatistic from '@/components/pages/admin/QuestionStatistic';
 import NewQuestion from '@/components/pages/admin/NewQuestion';
 import QuestionList from '@/components/pages/admin/QuestionList';
 import MarkList from '@/components/pages/admin/MarkList';
 import MarkDetail from '@/components/pages/admin/MarkDetail';
 import Class from '@/components/pages/admin/Class';
+import ClassInfo from '@/components/pages/admin/ClassInfo';
+import ManageUser from '@/components/pages/admin/ManageUser';
 
 // common: 没有权限
 import DontHaveAuth from '@/components/pages/common/DontHaveAuth';
@@ -90,6 +94,12 @@ export default new Router({
       name: 'AdminExam',
       component: AdminExam
     },
+    // admin-试卷列表-试卷统计
+    {
+      path: '/admin/examstatistic',
+      name: 'AdminExamStatistic',
+      component: AdminExamStatistic
+    },
     {
       path: '/admin/',
       name: 'AdminExam',
@@ -100,6 +110,12 @@ export default new Router({
       path: '/admin/question',
       name: 'AdminQuestion',
       component: AdminQuestion
+    },
+    // admin-试题列表-试题统计
+    {
+      path: '/admin/questionstatistic',
+      name: 'AdminQuestionStatistic',
+      component: AdminQuestionStatistic
     },
     // admin-创建试题
     {
@@ -130,6 +146,18 @@ export default new Router({
       path: '/admin/class',
       name: 'Class',
       component: Class
+    },
+    // admin-班级详细信息，内含试卷列表和学生列表
+    {
+      path: '/admin/classinfo',
+      name: 'ClassInfo',
+      component: ClassInfo
+    },
+    // admin-超级管理员管理用户
+    {
+      path: '/admin/manageuser',
+      name: 'ManageUser',
+      component: ManageUser
     },
 
 

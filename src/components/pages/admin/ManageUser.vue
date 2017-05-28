@@ -4,51 +4,51 @@
 
     <div class="container">
       <header class="admin-exam-head">
-        <span class="title">试卷列表</span>
-        <el-button @click="newExam()" class="button" type="primary">新建试卷</el-button>
+        <span class="title">用户列表</span>
       </header>
       <!--列表-->
       <template>
         <el-table
-          :data="exam"
+          :data="list"
           stripe
-          @cell-click="goQuestionList"
           style="width: 100%">
           <el-table-column
-          prop="description"
-          label="试卷名称"
-          :width="512"
+          prop="userName"
+          label="用户名"
+          :width="300"
           
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
-          prop="createUserName"
-          label="创建人"
+          prop="studentId"
+          label="学号"
+          :width="250">
+          </el-table-column>
+          <el-table-column
+          prop="classId"
+          label="班号"
           :width="150">
           </el-table-column>
           <el-table-column
-          prop="createTime"
-          label="创建时间"
-          :width="180">
-          </el-table-column>
-          <el-table-column
-          prop="finishedCnt"
-          label="已作答人数"
-          :width="120">
+          prop="wantToBeAdmin"
+          label="是否想成为管理员"
+          :width="150">
           </el-table-column>
           <el-table-column
           prop="_id"
-          label="操作"
-          :width="150">
+          label="更改角色"
+          :width="260">
             <template scope="scope">
-              <el-tooltip content="编辑">
-                <i class="el-icon-edit" @click="editItem(scope.row._id)"></i>
-              </el-tooltip>
-              <el-tooltip content="删除">
-                <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
-              </el-tooltip>
-              <el-tooltip content="查看试卷统计">
-                <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
+              <el-select v-model="scope.row.role" placeholder="请选择">
+                <el-option
+                  v-for="item in scope.row.roleArray"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <el-tooltip content="确定修改">
+                <i class="el-icon-edit" @click="editItem(_id)"></i>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -85,7 +85,7 @@ export default {
     return {
       token: '',
 
-      exam: [],
+      list: [],
 
       // 分页
       pageSize: globalConfig.pageSize,
@@ -103,29 +103,38 @@ export default {
   },
   methods: {
     getExam: function () {
-      this.$http.get('/api/auth/exam'
-      + '?userId=' + this.token.userId
-      + '&pageSize=' + this.pageSize
+      this.$http.get('/api/auth/manageUser'
+      + '?pageSize=' + this.pageSize
       + '&currentPage=' + this.currentPage
       ).then(response => {
         let data = response.body.data;
-        this.exam = data.list;
+        this.list = data.list;
         this.totalCnt = data.totalCnt;
-        this.exam.forEach((item) => {
-          item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
-          item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
+        this.list.forEach((item) => {
+          // 处理 wantToBeAdmin
+          if (item.wantToBeAdmin) {
+            item.wantToBeAdmin = '是';
+          } else {
+            item.wantToBeAdmin = '否';
+          }
+          // 处理 role
+          item.role = util.userRole[item.role];
+
+          item.roleArray = [{
+              value: 0,
+              label: '注销账号'
+            }, {
+              value: 1,
+              label: '学生'
+            }, {
+              value: 2,
+              label: '教师'
+            }];
         });
         }, response => {
       });
     },
-    newExam: function () {
-      this.$router.push('/admin/question');
-    },
-    goQuestionList: function (row, event, cell) {
-      if (cell.cellIndex === 0) {
-        this.$router.push('/admin/questionlist/' + row._id);
-      }
-    },
+
     // 分页功能
     handleCurrentChange(val) {
       this.currentPage = val;
@@ -176,8 +185,8 @@ export default {
         });          
       });
     },
-    showStatics: function (examId) {
-      this.$router.push('/admin/examstatistic?examId=' + examId);
+    showStatics: function () {
+
     }
   }
 }
