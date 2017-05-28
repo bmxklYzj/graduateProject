@@ -54,8 +54,8 @@ export default {
         this.data = {
           '试卷作答人数': dataRec.finishedCnt,
           '试卷平均分': dataRec.averageScore,
-          '试卷最高分': dataRec.maxScore,
-          '试卷最低分': dataRec.minScore,
+          '试卷最高分': dataRec.maxScore || 0,
+          '试卷最低分': dataRec.minScore || 0,
         }
         }, response => {
       });

@@ -4,8 +4,8 @@
 
     <div class="container">
       <header class="admin-class-head">
-        <span class="title">我创建的班级</span>
-        <el-button @click="newClass()" class="button" type="primary">新建班级</el-button>
+        <span class="title">班级试卷</span>
+        <el-button @click="newClass()" class="button" type="primary">添加试卷</el-button>
       </header>
       <!-- 班级列表 -->
       
@@ -67,10 +67,12 @@
 
 
       <!-- 学生列表 -->
-      <!--列表-->
+      <header class="admin-class-head student-list">
+        <span class="title">班级学生</span>
+        <el-button @click="newClass()" class="button" type="primary">添加学生</el-button>
+      </header>
       <template>
         <el-table
-          class="student-list"
           :data="studentList"
           stripe
           style="width: 100%">
@@ -505,6 +507,9 @@ export default {
   created: function () {
     this.token = util.getUserInfoFromToken() || {};
     
+    this.exam.forEach((item) => {
+      item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
+    })
     // 角色处理
     this.studentList.forEach(function(item, index) {
       item.role = util.userRole[item.role];
