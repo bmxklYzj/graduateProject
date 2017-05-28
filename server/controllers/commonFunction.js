@@ -105,10 +105,15 @@ let examList = function * () {
   let count = yield examModel.countExam(this.query);
   if (dbResult) {
     let temp = [];
-    dbResult.forEach((item, index) => {
+    for (let i = 0, len = dbResult.length; i < len; i++) {
+      let item = dbResult[i];
       temp.push(item.toJSON());
-      temp[index].finishedCnt = item.userDone.length;
-    });
+      temp[i].finishedCnt = yield userModel.examHasBeenDone(item._id.toJSON());
+    }
+    // dbResult.forEach((item, index) => {
+    //   temp.push(item.toJSON());
+    //   temp[index].finishedCnt = item.userDone.length;
+    // });
     this.body = {
       success: true,
       data: {

@@ -267,7 +267,7 @@ let markDetailGetQuestionById = function * (userId, questionId) {
  */
 let examHasBeenDone = function * (examId) {
   let count = yield User.count({'exam.examId': examId});
-  return Boolean(count);
+  return (count);
 };
 
 /**
