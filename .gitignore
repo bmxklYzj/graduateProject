@@ -5,3 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .idea
+.vscode/launch.json
+.vscode/settings.json
+static/upload/1495957959392-task_1_6_1_06.png
+static/upload/1495958006458-task_1_6_1_11.png

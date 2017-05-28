@@ -107,8 +107,8 @@ let userHaveQuestionId = function * (params) {
 
 /**
  * 用户做了某一个试卷，将examId加入到user表中的 exam 字段中
- * @param {String} userId 
- * @param {String} examId 
+ * @param {String} userId
+ * @param {String} examId
  */
 let userDoExam = function * (userId, examId, teacherReviewed, update) {
   teacherReviewed = teacherReviewed ? true : false;
@@ -303,6 +303,21 @@ let getAllScoreByQuestionId = function * (questionId) {
   return dbResult;
 };
 
+ // 更新user表中 exam 字段的 teacherComment
+let updateTeacherComment = function * (userId, examId, teacherComment) {
+  let dbResult = yield User.update({'_id': userId, 'exam.examId': examId},
+    {'$set': {'exam.$.teacherComment': teacherComment}}
+  );
+};
+
+// 教师批阅详情页-学生对教师的评价
+let getStudentCommentFromExam = function * (userId, examId) {
+  let dbResult = yield User.findOne({'_id': userId, 'exam.examId': examId},
+  {'exam.$': 1});
+  return dbResult.exam[0] || {};
+};
+
+
 module.exports = {
   getUserById,
   getUserByIdExcludedPassword,
@@ -322,5 +337,7 @@ module.exports = {
   examHasBeenDone,
   getAllUserList,
   getAllScoreByExamId,
-  getAllScoreByQuestionId
+  getAllScoreByQuestionId,
+  updateTeacherComment,
+  getStudentCommentFromExam
 };

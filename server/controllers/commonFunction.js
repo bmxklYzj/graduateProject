@@ -270,6 +270,8 @@ let markDetail = function * () {
   var userId = this.query.userId;
   var examId = this.query.examId;
   let result = [];
+  let studentComment = yield userModel.getStudentCommentFromExam(userId, examId);
+  studentComment = studentComment.studentComment;
   let questionsInExam = yield examModel.examGetQuestion(examId);
   for (let i = 0, len = questionsInExam.length; i < len; i++) {
     let questionId = questionsInExam[i];
@@ -285,6 +287,7 @@ let markDetail = function * () {
   this.body = {
     success: true,
     data: {
+      studentComment: studentComment,
       list: result
     }
   };
@@ -299,6 +302,9 @@ let markDetailPost = function * () {
   let userId = postBody.userId;
   let examId = postBody.examId;
   let questionArr = postBody.question;
+  let teacherComment = postBody.teacherComment;
+  // 更新user表中 exam 字段的 teacherComment
+  yield userModel.updateTeacherComment(userId, examId, teacherComment);
   // 更新 user 表中的 question
   for (let i = 0, len = questionArr.length; i < len; i++) {
     let params = {
@@ -442,6 +448,9 @@ let doExamListPost = function * () {
 let examDone = function * () {
   let examId = this.query.examId;
   let userId = this.query.userId;
+  // 在user表的exam字段中查找教师对学生的评价
+  let teacherComment = yield userModel.getStudentCommentFromExam(userId, examId);
+  teacherComment = teacherComment.teacherComment;
   // 更加examId查到exam的信息
   let examDB = yield examModel.getExamById(examId);
   // 根据userId查找exam表中的所有的question中的questionId,返回qeustion数组
@@ -462,6 +471,7 @@ let examDone = function * () {
   let result = {
     'teacherReviewed': teacherReviewedDB ? teacherReviewedDB.teacherReviewed : '',
     'createUserName': examDB.createUserName,
+    'teacherComment': teacherComment,
     'description': examDB.description,
     'createTime': examDB.createTime,
     'finishedCnt': examDB.userDone.length,

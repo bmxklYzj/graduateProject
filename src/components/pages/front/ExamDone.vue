@@ -27,7 +27,7 @@
 
       <el-alert
         v-if="teacherReviewed"
-        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题，并且老师已批阅此类主观题。正确率的统计计算了单选、多选题型、填空问答的全部提醒'"
+        :title="'此次试卷中包含 ' + questionTypeThreeCnt + ' 个填空问答题，并且老师已批阅此类主观题。正确率的统计计算了单选、多选题型、填空问答的全部题型'"
         type="info"
         show-icon>
       </el-alert>
@@ -38,13 +38,19 @@
         show-icon>
       </el-alert>
 
-        <el-input
-          type="textarea"
-          :autosize="{ minRows: 2, maxRows: 4}"
-          placeholder="您可以输入对试题的评价或想对老师说的话，教师在后台可以看到"
-          v-model="studentComment">
-        </el-input>
-        <el-button type="primary" @click="submitStudentComment()">提交评论</el-button>
+      <div class="teacher-comment">
+        <p>老师对您和试卷的评价：</p>
+        <p>{{teacherComment ? teacherComment : '无'}}</p>
+      </div>
+
+      <p class="student-comment">你对老师的建议：</p>
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 2, maxRows: 4}"
+        placeholder="您可以输入对试题的评价或想对老师说的话，教师在后台可以看到"
+        v-model="studentComment">
+      </el-input>
+      <el-button type="primary" @click="submitStudentComment()">提交评论</el-button>
 
     </div>
 
@@ -67,6 +73,7 @@ export default {
       examId: '',
       token: '',
       studentComment: '',
+      teacherComment: '',
       data: '',
       list: '',
       heat: 0,
@@ -82,7 +89,7 @@ export default {
   },
   created: function () {
     this.getExam();
-    
+
   },
   methods: {
     getExam: function () {
@@ -105,6 +112,7 @@ export default {
         '发布时间': moment(this.data.createTime).format('YYYY-MM-DD HH:mm:ss'),
         '多少人已做过': this.data.finishedCnt
       };
+      this.teacherComment = this.data.teacherComment;
       this.heat = +this.data.heat;
       let questionList = this.data.list;
       let rightCnt = 0;
@@ -178,8 +186,15 @@ export default {
       }
     }
     .el-textarea {
-      margin: 50px 0 20px;
+      margin: 10px 0 20px;
+    }
+    .teacher-comment {
+      margin-top: 40px;
+    }
+    .student-comment {
+      margin-top: 40px;
+      margin-bottom: 0;
     }
   }
-  
+
 </style>

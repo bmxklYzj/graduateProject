@@ -100,6 +100,9 @@
         </el-table>
       </template>
 
+      <p>学生对老师说的话：</p>
+      <p>{{studentComment ? studentComment : '无'}}</p>
+
       <el-input
         type="textarea"
         :autosize="{ minRows: 4, maxRows: 10}"
@@ -124,6 +127,7 @@ export default {
   name: 'hello',
   data () {
     return {
+      studentComment: '',
       teacherComment: '',
       userId: '',
       examId: '',
@@ -131,7 +135,7 @@ export default {
       dialogVisible: false,
       dialogImageUrl: '',
       multipleSelection: [], // 多选
-      
+
       question: [],
       checkList: [], // 多选的数组
     }
@@ -153,6 +157,7 @@ export default {
       + '?userId=' + this.userId
       + '&examId=' + this.examId
       ).then((response) => {
+        this.studentComment = response.body.data.studentComment;
         this.question = response.body.data.list;
         this.question.forEach((item, index) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
@@ -284,7 +289,7 @@ export default {
     margin-top: 60px;
     width: @width;
   }
-  
+
   .true-or-false {
     margin-top: 20px;
   }
