@@ -91,6 +91,53 @@ let examList = function * () {
   }
 };
 
+/**
+ * admin端-试卷列表删除试卷
+ * 参数userId, examId。
+ * 先在user表中判断是否有用户做过，没做过可以删，否则不能删
+ */
+let deleteExam = function * () {
+  let userId = this.query.userId;
+  let examId = this.query.examId;
+  let hasBeenDone = yield userModel.examHasBeenDone(examId);
+  if (hasBeenDone) {
+    this.body = {
+      success: false,
+      info: '已经有用户做过此试卷，不能删除！'
+    };
+  } else {
+    yield examModel.removeExam(examId);
+    this.body = {
+      success: true,
+      info: '试卷已经成功删除！'
+    };
+  }
+};
+/**
+ * admin端-试题列表删除试题
+ * 参数userId, questionId
+ * 先在 exam 表中判断是否有 该试题，没有可以删，否则不能删
+ */
+let deleteQuestion = function * () {
+  let userId = this.query.userId;
+  let questionId = this.query.questionId;
+  let hasBeenDone = yield examModel.questionHasBeenAddedToExam(questionId);
+  if (hasBeenDone) {
+    this.body = {
+      success: false,
+      info: '已经有用户做过此试题，不能删除！'
+    };
+  } else {
+    yield questionModel.removequestion(questionId);
+    this.body = {
+      success: true,
+      info: '试题已经成功删除！'
+    };
+  }
+};
+
+
+
 // 点击某一个试卷 进入到试题列表，纯展示
 // get 参数：examId
 let examQuestionlist = function * () {
@@ -109,6 +156,7 @@ let examQuestionlist = function * () {
     console.log(1, questionResult);
     this.body = {
       success: true,
+      dateRange: dbResult.dateRange,
       data: questionResult
     };
   } else {
@@ -152,7 +200,7 @@ let markList = function * () {
  * admin端-未批阅试卷 详情页面
  * 请求参数examId, userId
  */
-let markdetail = function * () {
+let markDetail = function * () {
   var userId = this.query.userId;
   var examId = this.query.examId;
   let result = [];
@@ -176,6 +224,63 @@ let markdetail = function * () {
   };
 };
 
+/**
+ * admin端-未批阅试卷 教师提交批阅
+ * 请求参数：userId, examId, teacherComment, question[]
+ */
+let markDetailPost = function * () {
+  let postBody = this.request.body || {};
+  let userId = postBody.userId;
+  let examId = postBody.examId;
+  let questionArr = postBody.question;
+  // 更新 user 表中的 question
+  for (let i = 0, len = questionArr.length; i < len; i++) {
+    let params = {
+      userId: postBody.userId,
+      questionId: questionArr[i].questionId,
+      result: +questionArr[i].result
+    };
+    yield userModel.userUpdateQuestionResult(params);
+  }
+
+  // 根据userId查找exam表中的所有的question中的questionId,返回qeustion数组
+  let questionArray = yield examModel.examGetQuestion(examId);
+  let list = [];
+  for (let i = 0, len = questionArray.length; i < len; i++) {
+    let params = {
+      userId: userId,
+      questionId: questionArray[i]
+    };
+    // 查找user表中question的questionId并返回一个对象
+    let item = yield userModel.userHaveQuestionId(params);
+    list.push(item);
+  }
+  // 计算正确率，存入user表exam字段的score中
+  let rightCnt = 0;
+  let falseCnt = 0;
+  list.forEach((item, index) => {
+    if (+item.result === 0) {
+      falseCnt++;
+    } else if (+item.result === 1) {
+      rightCnt++;
+    }
+  });
+  let score = ~~(rightCnt / (rightCnt + falseCnt) * 100);
+  yield userModel.examDoneUpdateScore(
+    {
+      'userId': userId,
+      'examId': examId,
+      'score': score
+    }
+  );
+  // 更新teacherReviewed
+  yield userModel.userDoExam(userId, examId, true, true);
+
+  this.body = {
+    success: true,
+    info: '提交批阅成功！'
+  };
+};
 
 // 用户做某一个题接口
 // request.body 三个参数：userId, questionId, answer
@@ -410,9 +515,12 @@ module.exports = {
   questionList,
   createExam,
   examList,
+  deleteExam,
+  deleteQuestion,
   examQuestionlist,
   markList,
-  markdetail,
+  markDetail,
+  markDetailPost,
   userDoQuestion,
   doExamListPost,
   examDone,

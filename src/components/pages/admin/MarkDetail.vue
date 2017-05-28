@@ -60,7 +60,7 @@
                 <div class="true-or-false">
                    <label><input type="radio" :name="props.row._id + 'radio'" :value="true"
                     v-model="props.row.userAnswerIsRight">正确</label>
-                    <label><input type="radio" :name="props.row._id + 'radio'" :value="true"
+                    <label><input type="radio" :name="props.row._id + 'radio'" :value="false"
                     v-model="props.row.userAnswerIsRight">错误</label>
                 </div>
               </div>
@@ -106,7 +106,7 @@
         placeholder="请输入对学生的寄语、评价"
         v-model="teacherComment">
       </el-input>
-      <el-button type="primary" size="big" class="submit-button" @click="">提交</el-button>
+      <el-button type="primary" size="big" class="submit-button" @click="submit()">提交</el-button>
     </div>
 
     <my-footer></my-footer>
@@ -154,12 +154,38 @@ export default {
       + '&examId=' + this.examId
       ).then((response) => {
         this.question = response.body.data.list;
-        this.question.forEach((item) => {
+        this.question.forEach((item, index) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
           item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
           item.userAnswerIsRight = true;
+          self.$set(self.question, index, item);
         });
-        self.$set(self.question, index, item);
+      }, response => {
+      });
+    },
+    submit: function () {
+      let submitQuestion = [];
+      this.question.forEach((item, index) => {
+        submitQuestion.push({
+          questionId :item._id,
+          result: item.userAnswerIsRight
+        })
+      });
+      let params = {
+        userId: this.userId,
+        examId: this.examId,
+        teacherComment: this.teacherComment,
+        question: submitQuestion
+      }
+      debugger
+      this.$http.post('/api/auth/markdetail', params).then((response) => {
+        let data = response.data || {};
+        if (data.success) {
+          this.$message.success('批阅试卷成功！');
+          this.$router.push('/admin/marklist');
+        } else  {
+          this.$message.error('批阅试卷失败！');
+        }
       }, response => {
       });
     },

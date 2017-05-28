@@ -81,10 +81,15 @@
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
-          prop="heat"
+          prop="_id"
           label="热度"
           :width="150"
           :show-overflow-tooltip="true">
+            <template scope="scope">
+              <i class="el-icon-edit" @click="editItem(_id)"></i>
+              <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
+              <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
+            </template>
           </el-table-column>
         </el-table>
       </template>
@@ -114,6 +119,14 @@
           v-model="ruleForm.examRequirement"></el-input>
         </el-form-item>
       </el-form>
+      <div class="date-range">
+        <p>选择试卷可以作答的时间段：</p>
+        <el-date-picker
+          v-model="dateRange"
+          type="datetimerange"
+          placeholder="选择时间范围">
+        </el-date-picker>
+      </div>
 
       <el-button @click="createExam('ruleForm')" class="admin-exam-create-exam" type="primary">将选中的试题创建新的试卷</el-button>
       
@@ -149,6 +162,7 @@ export default {
       
       question: [],
       checkList: [], // 多选的数组
+      dateRange: [Date.now(), Date.now()],
 
       ruleForm: {
         examDescription: '', // 创建试卷时的描述
@@ -217,7 +231,8 @@ export default {
             createUserName: this.token.userName,
             description: this.ruleForm.examDescription,
             requirement: this.ruleForm.examRequirement,
-            question: this.multipleSelection
+            question: this.multipleSelection,
+            dateRange: this.dateRange
           };
           this.$http.post('./api/auth/exam', params).then((response) => {
             var data = response.body || {};
@@ -245,6 +260,54 @@ export default {
     handleSizeChange(val) {
       this.pageSize = val;
       this.getQuestion();
+    },
+
+    // 对试题的操作
+    editItem: function () {
+      this.$router.push('admin/newquestion');
+    },
+    delItem: function (questionId) {
+      this.$confirm('确定要删除此试题?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let params = {
+          userId: this.token.userId,
+          questionId: questionId
+        }
+        this.$http.delete('/api/auth/question'
+        + '?userId=' + this.token.userId
+        + '&questionId=' + questionId
+        ).then(response => {
+          let data = response.body;
+          if (data.success) {
+            this.getQuestion();
+            this.$message({
+              type: 'info',
+              message: '删除成功！'
+            });
+          } else {
+            this.$message({
+              type: 'info',
+              message: data.info
+            }); 
+          }
+        }, response => {
+          this.$message({
+            type: 'error',
+            message: data.info
+          }); 
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    showStatics: function () {
+
     }
   }
 }
@@ -333,4 +396,12 @@ export default {
     margin-top: 60px;
     width: @width;
   }
+  // 操作按钮
+  .cell {
+    i {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+  }
+
 </style>

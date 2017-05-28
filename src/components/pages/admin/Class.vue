@@ -18,7 +18,6 @@
                     <p class="count">人数：{{item.count}}</p>
                 </div>
             </div>
-
           </li>
       </ul>
       <!--分页-->

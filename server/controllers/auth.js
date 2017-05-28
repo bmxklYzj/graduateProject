@@ -6,11 +6,18 @@ module.exports = (router) => {
   router.get('/question', commonFunction.questionList); // 获取试题列表
   router.post('/exam', commonFunction.createExam); // 创建试卷
   router.get('/exam', commonFunction.examList); // 获取试卷列表
+  // 删除某一个试卷
+  router.delete('/exam', commonFunction.deleteExam); // 点击某一个试卷 进入到试题列表，纯展示
   router.get('/examquestionlist', commonFunction.examQuestionlist); // 点击某一个试卷 进入到试题列表，纯展示
+   // 删除某一个试卷
+  router.delete('/question', commonFunction.deleteQuestion); // 点击某一个试卷 进入到试题列表，纯展示
+
   // marklist admin端-未批阅列表
   router.get('/marklist', commonFunction.markList);
   // marklist admin端-未批阅 详细情况
-  router.get('/markdetail', commonFunction.markdetail);
+  router.get('/markdetail', commonFunction.markDetail);
+  // marklist admin端-未批阅 教师提交批阅
+  router.post('/markdetail', commonFunction.markDetailPost);
 
   // 用户前端
   router.post('/userDoQuestion', commonFunction.userDoQuestion); // 用户做某一个题接口

@@ -3,7 +3,8 @@
     <div class="head">{{title}}</div>
     <ul class="table-list">
       <template v-for="(item, index) in list">
-        <li class="table-list-li">
+        <li class="table-list-li" v-if="title === '做过的试卷'" @click="goExamDone(item)">
+        <!--<li class="table-list-li" v-else>-->
           <div class="li-head">
             <span class="title">{{item.description}}</span>
             <span class="heat">热度：{{item.heat}}</span>
@@ -89,6 +90,9 @@ export default {
         };
         }, response => {
       });
+    },
+    goExamDone: function (item) {
+      this.$router.push('/examdone/' + item._id);
     }
   }
 }

@@ -60,11 +60,14 @@ import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
 let util = require('../../../common/util.js');
+let moment = require('moment');
 
 export default {
   name: 'hello',
   data () {
     return {
+      examStartTime: '',
+      examEndTime: '',
       examId: '',
       currentIndex: 0, // 当前做题进度
       percentage: 0, // 进度条
@@ -81,6 +84,7 @@ export default {
   },
   created: function () {
     this.getExam();
+    
     this.calcPercentage();
   },
   watch: {
@@ -95,11 +99,40 @@ export default {
     calcPercentage(val) {
       this.percentage = ~~(((this.currentIndex + 1) / this.list.length) * 100);
     },
+    canDoExam: function () {
+      let now = Date.now();
+      let tips = '';
+      let canDo = false;
+      if ((new Date(this.examStartTime)) > now) {
+        tips = '试卷还不能开始作答，请稍等';
+      } else if (now > (new Date(this.examEndTime))) {
+        tips = '很遗憾，试卷已经过期，不能作答';
+      } else {
+        canDo = true;
+        tips = '当前时间在试卷起止时间内，可以作答';
+      }
+      this.$alert('开始时间：' + this.examStartTime + '。截止时间：' + this.examEndTime + '。' + tips
+      , '试卷作答起止时间', {
+        confirmButtonText: '我知道了',
+        callback: action => {
+          // this.$message({
+          //   type: 'info',
+          //   message: `action: ${ action }`
+          // });
+          if (!canDo) {
+            this.$router.push('/exam');
+          }
+        }
+      });
+    },
     getExam: function () {
       this.examId = location.href.split('/doexam/')[1].split('/')[0];
       this.$http.get('./api/doExamList'
       + '?examId=' + this.examId
       ).then(response => {
+        this.examStartTime = moment(response.body.dateRange[0]).format('YYYY-MM-DD HH:mm:ss')
+        this.examEndTime = moment(response.body.dateRange[1]).format('YYYY-MM-DD HH:mm:ss')
+        
         this.list = response.body.data || {};
         this.list.forEach((item, index) => {
           if (+item.type === 1) {
@@ -110,6 +143,8 @@ export default {
             item.textarea = '';
           }
         });
+
+        this.canDoExam();
         }, response => {
       });
     },

@@ -13,7 +13,8 @@ let createExam = function * (params) {
     requirement: params.requirement,
     createTime: params.createTime,
     updateTime: params.updateTime,
-    question: params.question
+    question: params.question,
+    dateRange: params.dateRange
   });
   return dbResult;
 };
@@ -31,6 +32,25 @@ let examList = function * (params) {
   ).limit(pageSize);
   return dbResult;
 };
+
+
+/**
+ * 删除试卷
+ * @param {String} examId 试卷id
+ */
+let removeExam = function * (examId) {
+  yield Exam.remove({'_id': examId});
+};
+
+/**
+ * 试题是否已经被加入到试卷中，没哟可以删，否则不能删
+ * @param {String} questionId 试卷id
+ */
+let questionHasBeenAddedToExam = function * (questionId) {
+  let count = Exam.count({'question': questionId});
+  return (count);
+};
+
 
 let getExamById = function * (examId) {
   let dbResult = yield Exam.findOne({
@@ -77,5 +97,7 @@ module.exports = {
   getExamById,
   countExam,
   userDoExam,
-  examGetQuestion 
+  examGetQuestion,
+  removeExam,
+  questionHasBeenAddedToExam
 };

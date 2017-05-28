@@ -180,7 +180,7 @@ let examDoneStudentComment = function * (params) {
   return dbResult;
 };
 
-// 试题做完后，查看统计结果页面-更新用户试题正确率，存入user表exam字段的score中
+// 试题做完后，查看统计结果页面-更新用户试卷正确率，存入user表exam字段的score中
 let examDoneUpdateScore = function * (params) {
   let userId = params.userId || '';
   let examId = params.examId || '';
@@ -193,6 +193,25 @@ let examDoneUpdateScore = function * (params) {
     {
       $set: {
         'exam.$.score': score
+      }
+    }
+  );
+  return dbResult;
+};
+
+// 管理员批阅试卷-更新用户试题正确率，存入user表exam字段的 result 和 teacherReviewed
+let userUpdateQuestionResult = function * (params) {
+  let userId = params.userId || '';
+  let questionId = params.questionId || '';
+  let result = params.result || '';
+  let dbResult = yield User.update(
+    {
+      '_id': userId,
+      'question.questionId': questionId
+    },
+    {
+      $set: {
+        'question.$.result': result
       }
     }
   );
@@ -240,6 +259,17 @@ let markDetailGetQuestionById = function * (userId, questionId) {
   return dbResult.question[0] || [];
 };
 
+
+/**
+ * admin端-试卷列表删除试卷
+ * 参数 examId。
+ * 先在user表中判断是否有用户做过
+ */
+let examHasBeenDone = function * (examId) {
+  let count = yield User.count({'exam.examId': examId});
+  return Boolean(count);
+};
+
 module.exports = {
   getUserById,
   getUserByIdExcludedPassword,
@@ -253,6 +283,8 @@ module.exports = {
   getAllQuestion,
   examDoneStudentComment,
   examDoneUpdateScore,
+  userUpdateQuestionResult,
   markListGetAllExam,
-  markDetailGetQuestionById
+  markDetailGetQuestionById,
+  examHasBeenDone
 };

@@ -23,6 +23,14 @@ let createQuestion = function * (params) {
   return info;
 };
 
+/**
+ * 删除试题
+ * @param {String} questionId 试题id
+ */
+let removequestion = function * (questionId) {
+  yield Question.remove({'_id': questionId});
+};
+
 // 获取全部试题
 let questionList = function * (params, renderAnswer) {
   let userId = params.userId;
@@ -72,6 +80,7 @@ let userDoQuestion = function * (userId, questionId) {
 
 module.exports = {
   createQuestion,
+  removequestion,
   questionList,
   getQuestionById,
   countQuestion,

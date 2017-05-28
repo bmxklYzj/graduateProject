@@ -12,12 +12,13 @@
         <el-table
           :data="exam"
           stripe
-          @row-click="goQuestionList"
+          @cell-click="goQuestionList"
           style="width: 100%">
           <el-table-column
           prop="description"
           label="试卷名称"
           :width="512"
+          
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
@@ -36,9 +37,14 @@
           :width="120">
           </el-table-column>
           <el-table-column
-          prop="heat"
-          label="热度"
+          prop="_id"
+          label="操作"
           :width="150">
+            <template scope="scope">
+              <i class="el-icon-edit" @click="editItem(_id)"></i>
+              <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
+              <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
+            </template>
           </el-table-column>
         </el-table>
       </template>
@@ -109,8 +115,10 @@ export default {
     newExam: function () {
       this.$router.push('/admin/question');
     },
-    goQuestionList: function (row, event, column) {
-      this.$router.push('/admin/questionlist/' + row._id);
+    goQuestionList: function (row, event, cell) {
+      if (cell.cellIndex === 0) {
+        this.$router.push('/admin/questionlist/' + row._id);
+      }
     },
     // 分页功能
     handleCurrentChange(val) {
@@ -120,6 +128,50 @@ export default {
     handleSizeChange(val) {
       this.pageSize = val;
       this.getExam();
+    },
+
+    // 对试题的操作
+    editItem: function () {
+      this.$router.push('admin/question');
+    },
+    delItem: function (examId) {
+      this.$confirm('确定要删除此试题?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let params = {
+          userId: this.token.userId,
+          examId: examId
+        }
+        this.$http.delete('/api/auth/exam'
+        + '?userId=' + this.token.userId
+        + '&examId=' + examId
+        ).then(response => {
+          let data = response.body;
+          if (data.success) {
+            this.getExam();
+          } else {
+            this.$message({
+              type: 'info',
+              message: data.info
+            }); 
+          }
+        }, response => {
+          this.$message({
+            type: 'error',
+            message: data.info
+          }); 
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    showStatics: function () {
+
     }
   }
 }
@@ -163,5 +215,12 @@ export default {
     }
   }
 
+    // 操作按钮
+    .cell {
+      i {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    }
 
 </style>

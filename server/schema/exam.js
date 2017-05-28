@@ -9,6 +9,7 @@ var examSchema = new Schema({
   createTime: {type: Date, default: Date.now}, // 创建时间
   updateTime: {type: Date, default: Date.now}, // 更新时间
   question: {type: Array}, // 包含的问题id
+  dateRange: {type: Array}, // 试卷的可作答时间段，只有两个元素，分别是起止时间
 
   // 用户数据
   userDone: {type: Array} // 哪些人做了此试题
