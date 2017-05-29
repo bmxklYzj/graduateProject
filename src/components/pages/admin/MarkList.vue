@@ -33,13 +33,9 @@
           <el-table-column
           prop="finishedCnt"
           label="已作答人数"
-          :width="120">
+          :width="275">
           </el-table-column>
-          <el-table-column
-          prop="heat"
-          label="热度"
-          :width="150">
-          </el-table-column>
+
         </el-table>
       </template>
 
@@ -101,6 +97,7 @@ export default {
         this.exam.forEach((item) => {
           item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
           item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
+          item.finishedCnt = item.userDone.length;
         });
         }, response => {
       });

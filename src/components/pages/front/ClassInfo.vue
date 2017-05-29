@@ -5,7 +5,7 @@
     <div class="container">
       <header class="admin-class-head">
         <span class="title">班级试卷</span>
-        <el-button @click="newClass()" class="button" type="primary">添加试卷</el-button>
+        <!-- <el-button @click="newClass()" class="button" type="primary">添加试卷</el-button> -->
       </header>
       <!-- 班级列表 -->
 
@@ -29,14 +29,14 @@
           <el-table-column
           prop="createTime"
           label="创建时间"
-          :width="180">
+          :width="220">
           </el-table-column>
           <el-table-column
           prop="finishedCnt"
           label="已作答人数"
-          :width="120">
+          :width="220">
           </el-table-column>
-          <el-table-column
+         <!--  <el-table-column
           prop="_id"
           label="操作"
           :width="150">
@@ -51,7 +51,7 @@
                 <i class="el-icon-more" @click="showStatics(scope.row._id)"></i>
               </el-tooltip>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </template>
       <!--分页-->
@@ -69,7 +69,7 @@
       <!-- 学生列表 -->
       <header class="admin-class-head student-list">
         <span class="title">班级学生</span>
-        <el-button @click="newClass()" class="button" type="primary">添加学生</el-button>
+        <!-- <el-button @click="newClass()" class="button" type="primary">添加学生</el-button> -->
       </header>
       <template>
         <el-table
@@ -79,29 +79,34 @@
           <el-table-column
           prop="userName"
           label="用户名"
-          :width="350"
+          :width="400"
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
           prop="studentId"
           label="学号"
-          :width="300">
+          :width="350">
           </el-table-column>
           <el-table-column
           prop="classId"
           label="班号"
-          :width="250">
+          :width="360">
           </el-table-column>
-          <el-table-column
+<!--           <el-table-column
+          prop="role"
+          label="角色"
+          :width="280">
+          </el-table-column> -->
+         <!--  <el-table-column
           prop="_id"
           label="操作"
-          :width="200">
+          :width="260">
             <template scope="scope">
               <el-tooltip content="从班级中移除此学生">
                 <i class="el-icon-delete" @click="editItem(_id)"></i>
               </el-tooltip>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </template>
 
@@ -123,7 +128,7 @@
 
 <script>
 let moment = require('moment');
-import AdminHeader from '../../common/AdminHeader.vue'
+import Header from '../../common/Header.vue'
 import Footer from '../../common/Footer.vue'
 
 let util = require('../../../common/util.js');
@@ -496,7 +501,7 @@ export default {
     }
   },
   components: {
-    'my-header': AdminHeader,
+    'my-header': Header,
     'my-footer': Footer
   },
   created: function () {

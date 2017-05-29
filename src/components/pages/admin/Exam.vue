@@ -18,7 +18,7 @@
           prop="description"
           label="试卷名称"
           :width="512"
-          
+
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
@@ -138,7 +138,7 @@ export default {
 
     // 对试题的操作
     editItem: function () {
-      this.$router.push('admin/question');
+      this.$router.push('/admin/question');
     },
     delItem: function (examId) {
       this.$confirm('确定要删除此试题?', '提示', {
@@ -161,19 +161,19 @@ export default {
             this.$message({
               type: 'info',
               message: data.info
-            }); 
+            });
           }
         }, response => {
           this.$message({
             type: 'error',
             message: data.info
-          }); 
+          });
         });
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
     showStatics: function (examId) {

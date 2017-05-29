@@ -90,9 +90,9 @@
                       type="info"
                       show-icon>
                     </el-alert>
-                    
+
                   </p>
-                  <p>正确答案：</p>
+                  <p>标准答案：</p>
                   <template v-if="+props.row.type !== 3">
                     <span v-for="(item, index) in props.row.answer">{{String.fromCharCode('A'.charCodeAt(0) + item)}}</span>
                   </template>
@@ -227,7 +227,7 @@ export default {
             item.showAnswer = false;
             item.createTime = moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')
             item.updateTime = moment(item.updateTime).format('YYYY-MM-DD HH:mm:ss')
-            // 上面的注释内容的原因找到了：vue中对数组使用的时候没有使用变异方法，导致vue不能监听到数组数据的变化 
+            // 上面的注释内容的原因找到了：vue中对数组使用的时候没有使用变异方法，导致vue不能监听到数组数据的变化
             self.$set(self.exam, index, item);
           });
 
@@ -242,7 +242,7 @@ export default {
       // this.exam[index].showAnswer = true;
       console.log(this.exam[index]);
       let row = this.exam[index];
-      
+
       let token = util.getUserInfoFromToken() || {};
       let params = {
         userId: token.userId,

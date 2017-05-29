@@ -1,8 +1,16 @@
 <template>
   <section class="list">
     <div class="head">精华{{title}}推荐</div>
-    <ul>
-      <li v-for="(item, index) in list">
+    <ul v-if="href === 'question'">
+      <li v-for="(item, index) in list" @click="doQuestion(item)">
+        <span class="title">{{item.description}}</span>
+        <span class="heat">热度：{{item.heat}}</span>
+        <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
+      </li>
+
+    </ul>
+    <ul v-else>
+      <li v-for="(item, index) in list" @click="doExam(item)">
         <span class="title">{{item.description}}</span>
         <span class="heat">热度：{{item.heat}}</span>
         <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
@@ -44,6 +52,12 @@ export default {
     this.getList();
   },
   methods: {
+    doExam: function (item) {
+      this.$router.push('/doexam/' + item._id);
+    },
+    doQuestion: function (item) {
+      this.$router.push('/question');
+    },
     getList: function () {
       let urlType = 'exam';
       if (this.title === '试题') {

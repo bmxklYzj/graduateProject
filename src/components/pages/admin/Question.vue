@@ -51,7 +51,7 @@
                     <span v-for="(item, index) in props.row.answer">{{item}}</span>
                   </template>
                 </div>
-                
+
               </div>
             </template>
           </el-table-column>
@@ -82,12 +82,12 @@
           </el-table-column>
           <el-table-column
           prop="_id"
-          label="热度"
+          label="操作"
           :width="150"
           :show-overflow-tooltip="true">
             <template scope="scope">
               <el-tooltip content="编辑">
-                <i class="el-icon-edit" @click="editItem(_id)"></i>
+                <i class="el-icon-edit" @click="editItem(scope.row._id)"></i>
               </el-tooltip>
               <el-tooltip content="删除">
                 <i class="el-icon-delete" @click="delItem(scope.row._id)"></i>
@@ -135,7 +135,7 @@
       </div>
 
       <el-button @click="createExam('ruleForm')" class="admin-exam-create-exam" type="primary">将选中的试题创建新的试卷</el-button>
-      
+
     </div>
 
     <my-footer></my-footer>
@@ -165,7 +165,7 @@ export default {
       dialogVisible: false,
       dialogImageUrl: '',
       multipleSelection: [], // 多选
-      
+
       question: [],
       checkList: [], // 多选的数组
       dateRange: [Date.now(), Date.now()],
@@ -184,7 +184,7 @@ export default {
           { min: 3, max: 500, message: '长度在 3 到 500 个字符', trigger: 'blur' }
         ]
       }
-      
+
     }
   },
   components: {
@@ -270,7 +270,7 @@ export default {
 
     // 对试题的操作
     editItem: function () {
-      this.$router.push('admin/newquestion');
+      this.$router.push('/admin/newquestion');
     },
     delItem: function (questionId) {
       this.$confirm('确定要删除此试题?', '提示', {
@@ -297,19 +297,19 @@ export default {
             this.$message({
               type: 'info',
               message: data.info
-            }); 
+            });
           }
         }, response => {
           this.$message({
             type: 'error',
             message: data.info
-          }); 
+          });
         });
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
   showStatics: function (questionId) {

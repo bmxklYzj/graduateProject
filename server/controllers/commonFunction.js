@@ -243,7 +243,7 @@ let markList = function * () {
   let dbResult = yield userModel.markListGetAllExam(this.query);
   let result = [];
   for (let i = 0, len = dbResult.length; i < len; i++) {
-    for (let j = 0, len = dbResult.length; j < len; j++) {
+    for (let j = 0, lenJ = dbResult[i].exam.length; j < lenJ; j++) {
       if (dbResult[i].exam[j].teacherReviewed) {
         continue;
       }

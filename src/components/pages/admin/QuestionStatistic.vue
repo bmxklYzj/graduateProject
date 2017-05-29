@@ -6,7 +6,7 @@
       <header class="admin-exam-head">
         <span class="title">试题统计</span>
       </header>
-     
+
       <div class="statistic">
         <p class="item" v-for="(item, index) in data">
           <span class="left">{{index}}</span>
@@ -52,15 +52,15 @@ export default {
       ).then(response => {
         let dataRec = response.body.data;
         this.data = {
-          '试题作答人数': dataRec.finishedCnt,
+          '试题作答总人数': dataRec.finishedCnt,
           '试题作答正确人数': dataRec.rightCnt,
           '试题作答错误人数': dataRec.falseCnt,
-          '试题作答正确待定人数': dataRec.unknownCnt,
+          '试题作答正误待教师批阅人数': dataRec.unknownCnt,
         }
         }, response => {
       });
     }
-    
+
   }
 }
 </script>
@@ -86,11 +86,11 @@ export default {
       width: 600px;
       .left {
         display: inline-block;
-        width: 150px;
+        width: 190px;
         margin-right: 20px;
         text-align: right;
       }
     }
   }
-  
+
 </style>

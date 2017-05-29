@@ -16,7 +16,7 @@
           prop="userName"
           label="用户名"
           :width="300"
-          
+
           :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
@@ -37,7 +37,7 @@
           <el-table-column
           prop="_id"
           label="更改角色"
-          :width="260">
+          :width="250">
             <template scope="scope">
               <el-select v-model="scope.row.role" placeholder="请选择">
                 <el-option
@@ -170,19 +170,19 @@ export default {
             this.$message({
               type: 'info',
               message: data.info
-            }); 
+            });
           }
         }, response => {
           this.$message({
             type: 'error',
             message: data.info
-          }); 
+          });
         });
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
     showStatics: function () {
@@ -235,6 +235,9 @@ export default {
       i {
         margin-right: 10px;
         cursor: pointer;
+      }
+      .el-select {
+        width: 150px;
       }
     }
 

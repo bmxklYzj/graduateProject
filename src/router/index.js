@@ -11,6 +11,8 @@ import DoExam from '@/components/pages/front/DoExam';
 import ExamDone from '@/components/pages/front/ExamDone';
 import Activity from '@/components/pages/front/Activity';
 import Profile from '@/components/pages/front/Profile';
+import Class from '@/components/pages/front/Class';
+import ClassInfo from '@/components/pages/front/ClassInfo';
 
 // admin
 import AdminExam from '@/components/pages/admin/Exam';
@@ -21,8 +23,8 @@ import NewQuestion from '@/components/pages/admin/NewQuestion';
 import QuestionList from '@/components/pages/admin/QuestionList';
 import MarkList from '@/components/pages/admin/MarkList';
 import MarkDetail from '@/components/pages/admin/MarkDetail';
-import Class from '@/components/pages/admin/Class';
-import ClassInfo from '@/components/pages/admin/ClassInfo';
+import AdminClass from '@/components/pages/admin/Class';
+import AdminClassInfo from '@/components/pages/admin/ClassInfo';
 import ManageUser from '@/components/pages/admin/ManageUser';
 
 // common: 没有权限
@@ -86,6 +88,18 @@ export default new Router({
       name: 'Profile',
       component: Profile
     },
+        // admin-班级列表
+    {
+      path: '/class',
+      name: 'Class',
+      component: Class
+    },
+    // admin-班级详细信息，内含试卷列表和学生列表
+    {
+      path: '/classinfo',
+      name: 'ClassInfo',
+      component: ClassInfo
+    },
 
 
     // admin-试卷列表
@@ -144,14 +158,14 @@ export default new Router({
     // admin-班级列表
     {
       path: '/admin/class',
-      name: 'Class',
-      component: Class
+      name: 'AdminClass',
+      component: AdminClass
     },
     // admin-班级详细信息，内含试卷列表和学生列表
     {
       path: '/admin/classinfo',
-      name: 'ClassInfo',
-      component: ClassInfo
+      name: 'AdminClassInfo',
+      component: AdminClassInfo
     },
     // admin-超级管理员管理用户
     {

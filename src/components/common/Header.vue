@@ -10,7 +10,7 @@
     </div>
     <el-submenu index="3" v-if="userName">
       <template slot="title">个人中心({{userName}})</template>
-      <el-menu-item index="3-1"><a href="#activity" >学习活动</a></el-menu-item>
+      <el-menu-item index="3-1"><a href="#/class" >我的班级</a></el-menu-item>
       <el-menu-item index="3-2"><a href="#profile">个人信息</a></el-menu-item>
       <el-menu-item index="3-3"><a href="#profile">退出</a></el-menu-item>
     </el-submenu>
