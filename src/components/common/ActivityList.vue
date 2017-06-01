@@ -11,6 +11,13 @@
             <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
           </div>
         </li>
+        <li class="table-list-li" v-else>
+          <div class="li-head">
+            <span class="title">{{item.description}}</span>
+            <span class="heat">热度：{{item.heat}}</span>
+            <span class="cnt">作答人数：{{item.finishedCnt}} 人</span>
+          </div>
+        </li>
         <ul>
           <li>
             <div class="li-content" v-if="title === '做过的试卷'">

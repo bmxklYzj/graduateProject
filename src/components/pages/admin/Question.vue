@@ -313,8 +313,8 @@ export default {
       });
     },
   showStatics: function (questionId) {
-      this.$router.push('/admin/questionstatistic?questionId=' + questionId);
-    }
+    this.$router.push('/admin/questionstatistic?questionId=' + questionId);
+  }
   }
 }
 </script>

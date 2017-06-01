@@ -1,6 +1,7 @@
 let questionModel = require('../models/question');
 let userModel = require('../models/user');
 let examModel = require('../models/exam');
+let classModel = require('../models/class');
 
 // newquestion 创建题目
 let createQuestion = function * () {
@@ -598,6 +599,167 @@ let manageUser = function * () {
   };
 };
 
+
+// 班级管理
+// 管理员端-获取班级列表-get
+let AdminClassList = function * () {
+  let createUserId = this.query.createUserId;
+  let dbResult = yield classModel.AdminClassList(createUserId);
+  if (dbResult) {
+    this.body = {
+      success: true,
+      info: '操作成功！',
+      data: {
+        list: dbResult
+      }
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
+};
+// 管理员端-新建班级-post
+let AdminNewClass = function * () {
+  let params = this.request.body;
+  let dbResult = yield classModel.createClass(params);
+  this.body = {
+    success: true,
+    info: '操作成功！'
+  };
+};
+// 管理员端-编辑班级-put
+let AdminEditClass = function * () {
+  let params = this.request.body;
+  let dbResult = yield classModel.editClass(params);
+  this.body = {
+    success: true,
+    info: '编辑成功！'
+  };
+};
+// 管理员端-删除班级-delete
+let AdminDeleteClass = function * () {
+  let classId = this.query.classId;
+  let dbResult = yield classModel.removeClass(classId);
+  this.body = {
+    success: true,
+    info: '删除成功！'
+  };
+};
+// 管理员端-获取班级中的试卷
+let AdminGetExamIdInClass = function * () {
+  let classId = this.query.classId;
+  let examArray = yield classModel.getExamIdInClass(classId);
+  let list = [];
+  for (let i = 0, len = examArray.length; i < len; i++) {
+    let examItem = yield examModel.getExamById(examArray[i]);
+    list.push(examItem);
+  }
+  if (list) {
+    this.body = {
+      success: true,
+      info: '操作成功！',
+      data: {
+        list: list
+      }
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
+};
+// 管理员端-在班级中添加试卷
+let AdminClassAddExam = function * () {
+  let postBody = this.request.body || {};
+  let classId =  postBody.classId;
+  let examIdArray = postBody.examIdArray;
+  for (let i = 0, len = examIdArray.length; i < len; i++) {
+    yield classModel.classAddExam(classId, examIdArray[i]);
+  }
+  this.body = {
+    success: true,
+    info: '添加成功！'
+  };
+};
+// 管理员端-在班级中移除试卷
+let AdminClassRemoveExam = function * () {
+  let classId = this.query.classId;
+  let examId = this.query.examId;
+  yield classModel.removeExamInClass(classId, examId);
+  this.body = {
+    success: true,
+    info: '移除成功！'
+  };
+};
+
+// 管理员端-获取班级中的学生
+let AdminGetStudentIdInClass = function * () {
+  let classId = this.query.classId;
+  let studentArray = yield classModel.getStudentInClass(classId);
+  let list = [];
+  for (let i = 0, len = studentArray.length; i < len; i++) {
+    let studentItem = yield userModel.getUserById(studentArray[i]);
+    list.push(studentItem);
+  }
+  if (list) {
+    this.body = {
+      success: true,
+      info: '操作成功！',
+      data: {
+        list: list
+      }
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
+};
+// 管理员端-在班级中添加学生
+let AdminClassAddStudent = function * () {
+  let postBody = this.request.body || {};
+  let classId =  postBody.classId;
+  let studentId = postBody.studentId;
+  yield classModel.classAddStudent(classId, studentId);
+  this.body = {
+    success: true,
+    info: '添加成功！'
+  };
+};
+// 管理员端-在班级中移除学生
+let AdminClassRemoveStudent = function * () {
+  let classId = this.query.classId;
+  let studentId = this.query.studentId;
+  yield classModel.removeStudentInClass(classId, studentId);
+  this.body = {
+    success: true,
+    info: '移除成功！'
+  };
+};
+
+let getClassList = function * () {
+  let studentId = this.query.userId;
+  let dbResult = yield classModel.getClassList(studentId);
+  if (dbResult) {
+    this.body = {
+      success: true,
+      info: '操作成功！',
+      data: {
+        list: dbResult
+      }
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
+}
+
 module.exports = {
   createQuestion,
   questionList,
@@ -618,5 +780,21 @@ module.exports = {
   userExamList,
   userQuestionList,
   profile,
-  manageUser
+  manageUser,
+
+
+  // 班级相关
+  AdminClassList,
+  AdminNewClass,
+  AdminEditClass,
+  AdminDeleteClass,
+  AdminGetExamIdInClass,
+  AdminClassAddExam,
+  AdminClassRemoveExam,
+  AdminGetStudentIdInClass,
+  AdminClassAddStudent,
+  AdminClassRemoveStudent,
+
+  // 用户端获取班级列表
+  getClassList
 };

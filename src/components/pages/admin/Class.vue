@@ -5,18 +5,29 @@
     <div class="container">
       <header class="admin-class-head">
         <span class="title">我创建的班级</span>
-        <el-button @click="newClass()" class="button" type="primary">新建班级</el-button>
+        <el-button @click="createClass()" class="button" type="primary">新建班级</el-button>
       </header>
       <!--列表-->
       
       <ul class="cf">
-          <li v-for="(item, index) in list" @click="goClassInfo()">
+          <li v-for="(item, index) in list">
             <div class="wrap">
-                <p class="wrap-name">{{item.name}}</p>
+              <div class="wrap-content" @click="goClassInfo(item._id)">
+                <p class="wrap-name">{{item.className}}</p>
                 <div class="wrap-footer">
                     <p class="tag">学科：{{item.subject}}</p>
                     <p class="count">人数：{{item.count}}</p>
                 </div>
+              </div>
+                
+              <div class="mask">
+                <el-tooltip content="编辑">
+                  <i class="el-icon-edit" @click="editClass(item._id, item.className, item.subject)"></i>
+                </el-tooltip>
+                <el-tooltip content="删除">
+                  <i class="el-icon-delete" @click="removeClass(item._id)"></i>
+                </el-tooltip>
+              </div>
             </div>
           </li>
       </ul>
@@ -49,35 +60,7 @@ export default {
   data () {
     return {
       token: '',
-
-      list: [
-        {
-            'name': '班级1',
-            'subject': '数学',
-            'count': 3
-        }, {
-            'name': '班级2',
-            'subject': '物理',
-            'count': 1
-        }, {
-            'name': '班级3',
-            'subject': '化学',
-            'count': 3
-        },{
-            'name': '班级4',
-            'subject': '英语',
-            'count': 1
-        },{
-            'name': '班级5',
-            'subject': '地理',
-            'count': 2
-        },{
-            'name': '班级6',
-            'subject': '政治',
-            'count': 3
-        }
-
-      ],
+      list: [],
 
       // 分页
       pageSize: globalConfig.pageSize,
@@ -91,14 +74,94 @@ export default {
   },
   created: function () {
     this.token = util.getUserInfoFromToken() || {};
-    
+    this.getClassList();
   },
   methods: {
-    goClassInfo: function () {
-      this.$router.push('/admin/classinfo');
+    getClassList: function () {
+      this.$http.get('/api/auth/AdminClassList'
+      + '?createUserId=' + this.token.userId
+      ).then(response => {
+        let data = response.body.data;
+        this.list = data.list;
+        this.list.forEach(function(item) {
+          item.count = item.student.length;
+        }, this);
+        }, response => {
+      });
     },
-    newClass: function () {
-      this.$router.push('/admin/question');
+    createClass: function () {
+      let className = '';
+      let subject = '';
+      this.$prompt('请输入班级名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /.{2,10}/,
+        inputErrorMessage: '请输入2至10个字符'
+      }).then(({ value }) => {
+        className = value;
+        this.$prompt('请输入学科分类', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern: /.{2,10}/,
+          inputErrorMessage: '请输入2至10个字符'
+        }).then(({ value }) => {
+          subject = value;
+          let params = {
+            className: className, 
+            subject: subject,
+            createUserId: this.token.userId,
+            createUserName: this.token.userName
+          }
+          this.$http.post('/api/auth/AdminNewClass', params).then(response => {
+            this.$message.info(response.body.info);
+            this.getClassList();
+            }, response => {
+          });
+        }).catch(() => {
+        });
+      }).catch(() => {
+      });
+    },
+    editClass: function (classId, className, subject) {
+      this.$prompt('请输入班级名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: className,
+        inputPattern: /.{2,10}/,
+        inputErrorMessage: '请输入2至10个字符'
+      }).then(({ value }) => {
+        className = value;
+        this.$prompt('请输入学科分类', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputValue: subject,
+          inputPattern: /.{2,10}/,
+          inputErrorMessage: '请输入2至10个字符'
+        }).then(({ value }) => {
+          subject = value;
+          let params = {
+            classId: classId,
+            className: className, 
+            subject: subject
+          }
+          this.$http.put('/api/auth/AdminEditClass', params).then(response => {
+            this.$message.info(response.body.info);
+            this.getClassList();
+            }, response => {
+          });
+        }).catch(() => {
+        });
+      }).catch(() => {
+      });
+    },
+    removeClass: function (classId) {
+      this.$http.delete('/api/auth/AdminDeleteClass?classId=' + classId).then(response => {
+        this.$message.info(response.body.info);
+        this.getClassList();
+      });
+    },
+    goClassInfo: function (classId) {
+      this.$router.push('/admin/classinfo?classId=' + classId);
     },
     // 分页功能
     handleCurrentChange(val) {
@@ -184,6 +247,27 @@ export default {
         float: right;
       }
     }
+    
+    .mask {
+      display: none;
+      i {
+        font-size: 30px;
+        margin: 10px;
+      }
+    }
   }
+
+  .wrap:hover {
+    .mask {
+      display: block;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      background-color: #999;
+      z-index: 9999;
+    }
+  }
+
+
 
 </style>

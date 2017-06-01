@@ -24,6 +24,31 @@ module.exports = (router) => {
   // marklist admin端-未批阅 教师提交批阅
   router.post('/markdetail', commonFunction.markDetailPost);
 
+  // 管理员端班级
+  // 管理员端-获取班级列表
+  router.get('/AdminClassList', commonFunction.AdminClassList);
+  // 管理员端-创建班级
+  router.post('/AdminNewClass', commonFunction.AdminNewClass);
+  // 管理员端-创建班级
+  router.put('/AdminEditClass', commonFunction.AdminEditClass);
+  // 管理员端-删除班级
+  router.delete('/AdminDeleteClass', commonFunction.AdminDeleteClass);
+  // 管理员端-获取班级中的试卷
+  router.get('/AdminGetExamIdInClass', commonFunction.AdminGetExamIdInClass);
+  // 管理员端-在班级中添加试卷
+  router.post('/AdminClassAddExam', commonFunction.AdminClassAddExam);
+  // 管理员端-在班级中移除试卷
+  router.delete('/AdminClassRemoveExam', commonFunction.AdminClassRemoveExam);
+  // 管理员端-获取班级中的学生
+  router.get('/AdminGetStudentIdInClass', commonFunction.AdminGetStudentIdInClass);
+  // 管理员端-在班级中添加学生
+  router.post('/AdminClassAddStudent', commonFunction.AdminClassAddStudent);
+  // 管理员端-在班级中移除学生
+  router.delete('/AdminClassRemoveStudent', commonFunction.AdminClassRemoveStudent);
+
+
+  
+
   // 用户前端
   router.post('/userDoQuestion', commonFunction.userDoQuestion); // 用户做某一个题接口
 
@@ -41,6 +66,8 @@ module.exports = (router) => {
 
   // 用户个人信息页面：获取个人信息，除了密码
   router.get('/profile', commonFunction.profile); // 做题返回该试题的全部question列表
+
+
 
 
   // admin端 - 超级管理员 获取全部用户

@@ -8,5 +8,13 @@ module.exports = {
     // doexam 页面获取exam 在noAuth中，get('/doExamList');
     // doexam 提交exam 在auth中，post('/doExamList')
     router.get('/doExamList', commonFunction.examQuestionlist); // 做题返回该试题的全部question列表
+
+    // 班级相关
+    // 获取班级列表
+    router.get('/classList', commonFunction.getClassList);
+    // 获取班级中的试卷
+    router.get('/getExamInClass', commonFunction.AdminGetExamIdInClass);    
+    // 获取班级中的学生
+    router.get('/getExamInClass', commonFunction.AdminGetStudentIdInClass);
   }
 };

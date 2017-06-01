@@ -4,7 +4,7 @@
 
     <div class="container">
       <header class="admin-class-head">
-        <span class="title">我创建的班级</span>
+        <span class="title">我所属的班级</span>
         <!-- <el-button @click="newClass()" class="button" type="primary">新建班级</el-button> -->
       </header>
       <!--列表-->
@@ -12,7 +12,7 @@
       <ul class="cf">
           <li v-for="(item, index) in list" @click="goClassInfo()">
             <div class="wrap">
-                <p class="wrap-name">{{item.name}}</p>
+                <p class="wrap-name">{{item.className}}</p>
                 <div class="wrap-footer">
                     <p class="tag">学科：{{item.subject}}</p>
                     <p class="count">人数：{{item.count}}</p>
@@ -50,34 +50,7 @@ export default {
     return {
       token: '',
 
-      list: [
-        {
-            'name': '班级1',
-            'subject': '数学',
-            'count': 3
-        }, {
-            'name': '班级2',
-            'subject': '物理',
-            'count': 1
-        }, {
-            'name': '班级3',
-            'subject': '化学',
-            'count': 3
-        },{
-            'name': '班级4',
-            'subject': '英语',
-            'count': 1
-        },{
-            'name': '班级5',
-            'subject': '地理',
-            'count': 2
-        },{
-            'name': '班级6',
-            'subject': '政治',
-            'count': 3
-        }
-
-      ],
+      list: [],
 
       // 分页
       pageSize: globalConfig.pageSize,
@@ -91,9 +64,22 @@ export default {
   },
   created: function () {
     this.token = util.getUserInfoFromToken() || {};
-
+    
+    this.getClassList();
   },
   methods: {
+    getClassList: function () {
+      this.$http.get('./api/classList'
+      + '?userId=' + this.token.userId
+      ).then(response => {
+        let data = response.body.data;
+        this.list = data.list;
+        this.list.forEach(function(item) {
+          item.count = item.student.length;
+        }, this);
+        }, response => {
+      });
+    },
     goClassInfo: function () {
       this.$router.push('/classinfo');
     },

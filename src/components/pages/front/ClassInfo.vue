@@ -13,6 +13,7 @@
         <el-table
           :data="exam"
           stripe
+          @row-click="goDoExam"
           style="width: 100%">
           <el-table-column
           prop="description"
@@ -75,6 +76,7 @@
         <el-table
           :data="studentList"
           stripe
+          @row-click="goProfile"
           style="width: 100%">
           <el-table-column
           prop="userName"
@@ -516,9 +518,11 @@ export default {
     }, this);
   },
   methods: {
-
-    newClass: function () {
-      this.$router.push('/admin/question');
+    goDoExam: function (row, event, column) {
+      this.$router.push('/doexam/' + row._id);
+    },
+    goProfile: function (row, event, colum) {
+      this.$router.push('/profile/');
     },
     // 分页功能
     handleCurrentChange(val) {
