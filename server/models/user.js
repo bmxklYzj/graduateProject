@@ -317,6 +317,14 @@ let getStudentCommentFromExam = function * (userId, examId) {
   return dbResult.exam[0] || {};
 };
 
+// 超级管理员管理账户角色
+let updateUserRole = function * (userId, role) {
+  let dbResult = yield User.update(
+    {'_id': userId},
+    {'role': role}
+  );
+  return dbResult;
+};
 
 module.exports = {
   getUserById,
@@ -339,5 +347,8 @@ module.exports = {
   getAllScoreByExamId,
   getAllScoreByQuestionId,
   updateTeacherComment,
-  getStudentCommentFromExam
+  getStudentCommentFromExam,
+
+  // 超级管理员管理账户角色
+  updateUserRole
 };

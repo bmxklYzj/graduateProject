@@ -48,7 +48,7 @@
                 </el-option>
               </el-select>
               <el-tooltip content="确定修改">
-                <i class="el-icon-edit" @click="editItem(_id)"></i>
+                <i class="el-icon-edit" @click="editItem(scope.row)"></i>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -99,10 +99,10 @@ export default {
   },
   created: function () {
     this.token = util.getUserInfoFromToken() || {};
-    this.getExam();
+    this.getUser();
   },
   methods: {
-    getExam: function () {
+    getUser: function () {
       this.$http.get('/api/auth/manageUser'
       + '?pageSize=' + this.pageSize
       + '&currentPage=' + this.currentPage
@@ -138,55 +138,31 @@ export default {
     // 分页功能
     handleCurrentChange(val) {
       this.currentPage = val;
-      this.getExam();
+      this.getUser();
     },
     handleSizeChange(val) {
       this.pageSize = val;
-      this.getExam();
+      this.getUser();
     },
 
-    // 对试题的操作
-    editItem: function () {
-      this.$router.push('admin/question');
-    },
-    delItem: function (examId) {
-      this.$confirm('确定要删除此试题?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        let params = {
-          userId: this.token.userId,
-          examId: examId
-        }
-        this.$http.delete('/api/auth/exam'
-        + '?userId=' + this.token.userId
-        + '&examId=' + examId
-        ).then(response => {
-          let data = response.body;
-          if (data.success) {
-            this.getExam();
-          } else {
-            this.$message({
-              type: 'info',
-              message: data.info
-            });
-          }
-        }, response => {
-          this.$message({
-            type: 'error',
-            message: data.info
-          });
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
+    // 对用户的操作
+    editItem: function (item) {
+      let roleChinese = item.role;
+      let config = {
+        '注销账号': '0',
+        '学生': '1',
+        '教师': '2',
+      }
+      let roleNumber = config[roleChinese];
+      let params = {
+        'userId': item._id,
+        'role': item.role
+      };
+      this.$http.post('/api/auth/manageUser', params).then(response => {
+        this.$message.success(response.body.info);
+      }, response => {
+        this.$message.error(response.body.info);
       });
-    },
-    showStatics: function () {
-
     }
   }
 }

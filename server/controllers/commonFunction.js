@@ -741,6 +741,7 @@ let AdminClassRemoveStudent = function * () {
   };
 };
 
+// 用户端获取班级列表
 let getClassList = function * () {
   let studentId = this.query.userId;
   let dbResult = yield classModel.getClassList(studentId);
@@ -758,7 +759,23 @@ let getClassList = function * () {
       info: '操作失败！'
     };
   }
-}
+};
+// 超级管理员管理账户角色
+let manageUserPost = function * () {
+  let postBody = this.request.body;
+  let dbResult = yield userModel.updateUserRole(postBody.userId, postBody.role);
+  if (dbResult) {
+    this.body = {
+      success: true,
+      info: '操作成功！'
+    };
+  } else {
+    this.body = {
+      success: false,
+      info: '操作失败！'
+    };
+  }
+};
 
 module.exports = {
   createQuestion,
@@ -796,5 +813,8 @@ module.exports = {
   AdminClassRemoveStudent,
 
   // 用户端获取班级列表
-  getClassList
+  getClassList,
+
+  // 超级管理员管理账户角色
+  manageUserPost
 };

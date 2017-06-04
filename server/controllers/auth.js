@@ -47,7 +47,10 @@ module.exports = (router) => {
   router.delete('/AdminClassRemoveStudent', commonFunction.AdminClassRemoveStudent);
 
 
-  
+  // 超级管理员管理用户角色
+  router.post('/manageUser', commonFunction.manageUserPost);
+
+
 
   // 用户前端
   router.post('/userDoQuestion', commonFunction.userDoQuestion); // 用户做某一个题接口
