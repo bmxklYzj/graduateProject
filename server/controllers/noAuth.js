@@ -13,8 +13,8 @@ module.exports = {
     // 获取班级列表
     router.get('/classList', commonFunction.getClassList);
     // 获取班级中的试卷
-    router.get('/getExamInClass', commonFunction.AdminGetExamIdInClass);    
+    router.get('/getExamInClass', commonFunction.AdminGetExamIdInClass);
     // 获取班级中的学生
-    router.get('/getExamInClass', commonFunction.AdminGetStudentIdInClass);
+    router.get('/getStudentInClass', commonFunction.AdminGetStudentIdInClass);
   }
 };

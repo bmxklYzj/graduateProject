@@ -10,7 +10,7 @@
       <!--列表-->
 
       <ul class="cf">
-          <li v-for="(item, index) in list" @click="goClassInfo()">
+          <li v-for="(item, index) in list" @click="goClassInfo(item._id)">
             <div class="wrap">
                 <p class="wrap-name">{{item.className}}</p>
                 <div class="wrap-footer">
@@ -80,8 +80,8 @@ export default {
         }, response => {
       });
     },
-    goClassInfo: function () {
-      this.$router.push('/classinfo');
+    goClassInfo: function (classId) {
+      this.$router.push('/classinfo?classId=' + classId);
     },
     newClass: function () {
       this.$router.push('/admin/question');
